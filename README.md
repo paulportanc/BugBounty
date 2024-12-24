@@ -149,6 +149,44 @@ python loxs.py
 Enter the timeout duration for each request (Press Enter for 0.5): "Presionar enter"
 ```
 
+-------------------------------------------------------------------------------------------------
+
+
+# ***III. JavaScript Reconocimiento: Methodology***
+
+### 3.1. Extraer todos los endpoint js.
+```bash
+katana -u ejemplo.com -d 5 -jc | grep '\.js$' | tee alljs.txt
+```
+### 3.2. Obtener todas las URLs conocidas relacionadas con el dominio desde varias fuentes públicas y agregamos las nuevas URLs al archivo alljs.txt.
+```bash
+echo ejemplo.com | gau | grep '\.js$' | anew alljs.txt
+```
+### 3.3. Comprobar las URLs listadas, seleccionando solo las que devuelven un código HTTP 200 (OK).
+```bash
+cat alljs.txt | uro | sort -u | httpx-toolkit -mc 200 -o ejemplo.txt
+```
+### 3.4. Analizar los archivos JavaScript en busca de fugas de información.
+```bash
+cat ejemplo.txt | jsleaks -s -l -katana
+```
+### 3.5. Escaneo de vulnerabilidades usando la plantilla especificada para buscar divulgación de credenciales. -c 30: Corre 30 hilos en paralelo para mayor velocidad
+```bash
+cat ejemplo.txt | nuclei -t prsnl/credentials-disclosure-all.yaml -c 30
+```
+### 3.6. Similar al comando anterior, pero utiliza una plantilla diferente (http/exposures) para buscar exposiciones de datos.
+```bash
+cat ejemplo.txt | nuclei -t /home/paulportanc/nuclei-template/http/exposures -c 30
+```
+### 3.7. Final.
+```bash
+cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg.py "{}" --js_urls --domains --ips --leaked_creds --local_storage'
+```
+
+
+
+
+
 
 > [!Warning]
 > 
