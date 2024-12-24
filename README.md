@@ -184,7 +184,15 @@ cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg
 ```
 
 
+-------------------------------------------------------------------------------------------------
 
+
+# ***IV. Descubrimiento de IP de origen detrás de WAF: Methodology***
+
+### 3.1. ....
+```bash
+....
+```
 
 
 
