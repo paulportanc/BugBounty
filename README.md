@@ -2,19 +2,19 @@
 
 `Bug Bounty Methodology` este documento sirve para tener una metodología a la hora de hacer bug bounty en programas BBP (bug bounty program) o VDP (vulnerability disclosure program). Donde encontraras comandos para ayudarte rapidamente a realizar bug bounty desde lo mas básico a lo avanzado.
 
-### 1.1. Encontrar subdominios con subfinder
+### 1.1. Encontrar todos subdominios con subfinder de un dominio principal
 
 ```bash
 subfinder -d viator.com -all  -recursive > subdomain.txt
 ```
 
-### 1.2. Usando httpx-toolkit
+### 1.2. Usando httpx-toolkit para filtrar subdominio con código HTTP 200 y puertos 80,443,8080,8000,8888
 
 ```bash
 cat subdomain.txt | httpx-toolkit -ports 80,443,8080,8000,8888 -threads 200 > subdomains_alive.txt
 ```
 
-### 1.3. Usando katana
+### 1.3. Usando katana para el reconocimiento pasivo y excluye los recursos estáticos con las extensiones especificadas woff,css,png....
 
 ```bash
 katana -u subdomains_alive.txt -d 5 -ps -pss waybackarchive,commoncrawl,alienvault -kf -jc -fx -ef woff,css,png,svg,jpg,woff2,jpeg,gif,svg -o allurls.txt
