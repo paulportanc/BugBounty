@@ -195,6 +195,95 @@ cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg
 ```
 
 
+-------------------------------------------------------------------------------------------------
+
+# ***V. Extensiones para Bug Hunting***
+   
+| Extensiones | Descripción | URL | Browser | Logo | By |
+| --- | --- | --- | --- | --- | --- |
+| `EndPointer` | Analiza y extrae endpoints de aplicaciones web | https://addons.mozilla.org/en-US/firefox/addon/endpointer/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/e261f3e348bb9ba18e12fb671180633de99f6a38/extension-img/EndPointer.png "EndPointer") | `Interloper Security Group` |
+| `Ripper Web Content - Capture Metadata Content` | Extensión que analiza y extrae metadatos del contenido encontrado en la web | https://chromewebstore.google.com/detail/ripper-web-content-captur/popfhajlkgkiecedhefhifccngogomgh | Chrome | ![alt text](https://github.com/paulportanc/Notas/blob/65ce6804513b18d14d764f6351772190ecfae667/extension-img/RipperWebContent.png "Ripper Web Content") | `Miguel Segovia` |
+| `User-Agent Switcher for Chrome` | Puede cambiar de forma rápida y sencilla entre cadenas de agente de usuario | https://chromewebstore.google.com/detail/user-agent-switcher-for-c/djflhoibgkdhkhhcedjiklpkjnoahfmg | Chrome | ![alt text](https://github.com/paulportanc/Notas/blob/d2e5fd3473d58a0b7571c7cc8494be32ce51cc72/extension-img/User-Agent.png "User-Agent") | `Google 1600 Amphitheatre Pkwy Mountain View, CA 94043 US` |
+| `HackBar` | Una extensión del navegador para pruebas de penetración, aparece en la opción de inspeccionar una URL  | https://chromewebstore.google.com/detail/hackbar/ginpbkfigcoaokgflihfhhmglmbchinc | Chrome | ![alt text](https://github.com/paulportanc/Notas/blob/efe4c1a0ea1a19b9bc64f9f9a4add2fdd0b500d4/extension-img/HackBar.png "HackBar") | `0140454` |
+| `Max HacKBar` | Una extensión del navegador para pruebas de penetración, aparece en la opción de inspeccionar una URL  | https://addons.mozilla.org/es/firefox/addon/maxs-hackbar/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/efe4c1a0ea1a19b9bc64f9f9a4add2fdd0b500d4/extension-img/MaxHacKBar.png "Max HacKBar") | `Maxlab` |
+| `Wappalyzer` | Esta extensión le ayudará a encontrar qué tecnología se ejecuta en el sitio web | https://addons.mozilla.org/es/firefox/addon/wappalyzer/ o https://chromewebstore.google.com/detail/wappalyzer-technology-pro/gppongmhjkpfnbhagpmjfkannfbllamg | Firefox y Chrome | ![alt text](https://github.com/paulportanc/Notas/blob/917e1efb909ad70a84ba5c8346eeb81963c86fc8/extension-img/Wappalyzer.png "Wappalyzer") | `Wappalyzer` |
+| `WaybackURL` | Obtener todas las URL que Wayback Machine conoce para un dominio. Es un plugin tipo FFUZZ | https://addons.mozilla.org/en-US/firefox/addon/waybackurl/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/a09c8a99375d5899d7d8a8eb93688053f53d8520/extension-img/WaybackURL.png "WaybackURL") | `Hossein Shourabi` |
+| `Temp Mail` | Esta extensión se utiliza para el servicio de correo temporal de forma rápida y sencilla | https://addons.mozilla.org/en-US/firefox/addon/temp-mail/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/70aa57238a65069a9b451b6f720b77dfe685882a/extension-img/TempMail.png "Temp Mail") | `Privatix` |
+| `Hunter` | Encuentra direcciones de correo electrónico en segundos. Esta extensión se utiliza para buscar todos los correos electrónicos del sitio web y es mejor utilizarla para enviar informes sobre programas públicos | https://addons.mozilla.org/en-US/firefox/addon/hunterio/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/0c7a6f078d5e219c922475787193d2c818211b68/extension-img/Hunter.png "Hunter") | `Hunter` |
+| `Trufflehog` | Esta extensión le ayuda a encontrar claves API ocultas en sitios web | https://addons.mozilla.org/en-US/firefox/addon/trufflehog/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/f8d0e85f718f55ca4582258064e9c18bb2254864/extension-img/Trufflehog.png "Trufflehog") | `Xhunt3r` |
+| `FoxyProxy Standard` | Esta extensión es para usar burpsuite o cualquier otra aplicación de captura de proxy (mitm) | https://addons.mozilla.org/en-US/firefox/addon/foxyproxy-standard/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/daa2f5e5c8e9738d2ba9ee56fe8a5b611f6bd963/extension-img/FoxyProxyStandard.png "FoxyProxy Standard") | `Eric Jung, erosman` |
+| `HackTools` | Esta extensión le brinda toda la información útil para probar el sitio de manera sencilla | https://addons.mozilla.org/en-US/firefox/addon/hacktools/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/2a04f9b8b4b08392d3d8dd13d8ebc8280ebd3d0a/extension-img/HackTools.png "HackTools") | `Riadh B. & Ludovic C.` |
+| `CookieManager - Cookie Editor` | Esta es la mejor extensión para el editor de cookies y también le indicará si el sitio es http únicamente o si el indicador de seguridad está configurado o no. Otra alternativa https://cookie-editor.com/ | https://addons.mozilla.org/en-US/firefox/addon/edit-cookie/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/524832dbd7ec9f7f344b315f6b20d1e5b953d626/extension-img/CookieManager.png "HackTools") | `Joue` |
+| `Disable WebRTC` | Esta extensión es el mejor uso para proteger su IP VPN del webrtc exposer | https://addons.mozilla.org/en-US/firefox/addon/happy-bonobo-disable-webrtc/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/2e090e13b2b8e5430436c9f575434c063dd2c897/extension-img/DisableWebRTC.png "Disable WebRTC") | `Chris Antaki` |
+| `Link Gopher` | Esta extensión se utiliza para recuperar todos los dominios y enlaces de sitios web y resultados de Google | https://addons.mozilla.org/en-US/firefox/addon/link-gopher/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/1153f8ff9adbe275dcca47ef3233d071ac813f26/extension-img/LinkGopher.png "Link Gopher") | `Andrew Ziem` |
+| `FindSomething` | Esta extensión se utiliza para encontrar posibles parámetros ocultos o claves secretas | https://addons.mozilla.org/en-US/firefox/addon/findsomething/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/b4bf22c8a12f128317ec6a1edb1930808627c52a/extension-img/FindSomething.png "FindSomething") | `residual.laugh` |
+| `DotGit` | Esta extensión le ayudará a encontrar archivos .git en la divulgación de información p1 del sitio web | https://addons.mozilla.org/en-US/firefox/addon/dotgit/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/6028d403e29ede095d52b42f1869229f93d0386e/extension-img/DotGit.png "DotGit") | `davtur` |
+| `Open Multiple URLs` | Esta extensión se utiliza para abrir varios sitios a la vez | https://addons.mozilla.org/en-US/firefox/addon/open-multiple-urls/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/50fd0dfcfa85496a3aa1796a8bc09f66bd5f40c5/extension-img/OpenMultipleURLs.png "Open Multiple URLs") | `ht` |
+| `uBlock Origin` | Esta extensión es mejor para bloquear anuncios o rastreadores irritantes en sitios | https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/c2626d596a78233a08de407e8228b4ca0598800f/extension-img/uBlockOrigin.png "uBlock Origin") | `Raymond Hill` |
+| `Dark Reader` | Esta extensión protegerá mejor sus ojos durante la noche mientras caza | https://addons.mozilla.org/en-US/firefox/addon/darkreader/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/3e1e24cd1e0e813b48d363057cd334420fb01a01/extension-img/DarkReader.png "Dark Reader") | `Dark Reader Ltd` |
+| `User-Agent Switcher` | Esta extensión se utiliza para cambiar de agente de usuario y es mejor para probar el sitio con muchos agentes de usuario | https://addons.mozilla.org/en-US/firefox/addon/uaswitcher/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/3f04196e833cb1ef093f4b0c5adb007a51002c00/extension-img/User-AgentSwitcher.png "User-Agent Switcher") | `ntninja` |
+| `retire.js` | Esta extensión le indica todas las bibliotecas de JavaScript vulnerables | https://addons.mozilla.org/en-US/firefox/addon/retire-js/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/00c80a1bd8c03314a46d2a8551f99246dafc5fa3/extension-img/retire.js.png "retire.js") | `Francesco De Stefano` |
+| `Shodan` | El complemento Shodan le indica dónde está alojado el sitio web (país, ciudad), quién es el propietario de la IP y qué otros servicios/puertos están abiertos | https://addons.mozilla.org/es/firefox/addon/shodan-addon/ | Firefox | ![alt text](https://github.com/paulportanc/Notas/blob/c80ff9b136cdb3a8bc787fd6ea818841fe948703/extension-img/Shodan.png "Shodan") | `Shodan` |
+| `EXIF Viewer Pro` | Esta extensión le brindará acceso directo a los datos exif de cualquier foto, sin necesidad de visitar ningún sitio. Es útil para buscar errores, si encuentra algún sitio, siempre verifique la carga de la imagen de perfil con esta extensión si hay datos exif como la ubicación geográfica presentes en él. repórtelos o aumente el impacto incorporando xss y rce en esa imagen. | https://chromewebstore.google.com/detail/exif-viewer-pro/mmbhfeiddhndihdjeganjggkmjapkffm | Chrome | ![alt text](https://github.com/paulportanc/Notas/blob/e7f0cf2bfe15f96b1c0baf047bbe764e465fbd27/extension-img/EXIFViewerPro.png "EXIF Viewer Pro") | `exifviewers.com` |
+
+
+-------------------------------------------------------------------------------------------------
+
+
+# ***VI. Anonimato con Nipe***
+   
+   `NIPE` es un programa que usa la red Tor como puerta de enlace predeterminada del usuario, enrutando todo el tráfico en la red Tor, que a menudo se usa para brindar privacidad y anonimato. Permanecer en el anonimato es una excelente manera de protegerse de todo tipo de vigilancia..
+   
+## 6.1.Instalación
+
+   - Paso 1: Colocarse en el /home/kali y crear el directorio nipe e ingresar.
+   ```bash
+   mkdir nipe
+   cd nipe
+   ```
+   - Paso 2: Luego, clonar este repositorio desde GitHub.
+   ```bash
+   git clone https://github.com/htrgouvea/nipe
+   ```
+   - Paso 3: Dentro habrá otro directorio llamado nipe, ingresar a el.
+   ```bash
+   cd nipe
+   ```    
+   - Paso 4: Ejecutar el siguiente comando para instalar las bibliotecas y dependencias.
+   ```bash
+   sudo cpan install Try::Tiny Config::Simple JSON
+   ```  
+   - Paso 5: Usar el siguiente comando para instalar las dependencias de Nipe o un script de Perl.
+   ```bash
+   sudo perl nipe.pl install
+   ```  
+
+## 6.2.Uso (ejecutar desde /home/kali/nipe/nipe)
+
+   - Paso 1: Verificar el estado de nipe, escriba el siguiente comando. Y verás que el estado actual es deshabilitado. Aparecerá de la siguiente manera: El estado está deshabilitado y la IP es su IP Pública actual. La IP se puede validar ingreando al sitio https://www.whatismyip.com/
+   ```bash
+   sudo perl nipe.pl status
+
+   ┌──(kali㉿kali)-[~/nipe/nipe]
+   └─$ sudo perl nipe.pl status
+
+       [+] Status: false 
+       [+] Ip: 38.25.30.53
+   ```
+  - Paso 2: Para iniciar el servicio Nipe. Luego ejecutar el comando status. El estado está en TRUE y la IP es una IP Pública de otro pais. 
+   ```bash
+   sudo perl nipe.pl start
+
+   ┌──(kali㉿kali)-[~/nipe/nipe]
+   └─$ sudo perl nipe.pl status
+        
+       [+] Status: true 
+       [+] Ip: 185.220.102.8
+   ```
+   - **Nota** es probable que a la primera te aparezca el siguiente error: *[!] ERROR: sorry, it was not possible to establish a connection to the server.*  Si en caso de aparecer el siguiente error solo debes detener el estado con stop y luego volver a iniciar un par de veces hasta que en estado sea TRUE.
+
+
+
 
 > [!Warning]
 > 
