@@ -257,7 +257,7 @@
 -------------------------------------------------------------------------------------------------
 
 
-# ***V. Encontrar errores de divulgación de información***
+# ***V. Encontrar errores de divulgación de información | Cómo acceder a archivos 404 de cualquier servidor***
 
 1. Recuperar todas las URL pasivas del dominio de destino utilizando la Wayback machine. Simplemente cambie el nombre de dominio a su objetivo. En este punto puedes buscar manualmente un archivo específico como pdf, csvc, archivos db y más para identificar vulnerabilidades de divulgación de información.
    ```bash
