@@ -189,6 +189,8 @@ cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg
 
 # ***IV. Encontrar la IP de origen de cualquier sitio web detrás de un waf: Methodology***
 
+### Paso 1: Encontrar la IP Origen.
+
 1. Analizar el sitio web con la extensión Wappalyzer el sitio web.
 2. Analizar el sitio web con la extensión Shodan para ver la dirección IP. Y acceder al sitio web con la IP que indica (puede que muestre una página de error, lo que significa que no se puede acceder a la IP directa).
 3. Copiar el nombre del dominio y analizar en la terminal usando ping. Se podrá ver la IP del cloudfront y no del sitio web.
@@ -214,12 +216,28 @@ cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg
    ```bash
    wafw00f https://ejemplo.com/
    ```
-6. El siguiente paso usaré un Shodan Dork para encontrar todos los dominios relacionados. En https:///www.shodan.io/dashboard  copiar el siguiente Dork. Si encontramos resultado acceder a la IP una por una.
+6. El siguiente paso usaré un Shodan Dork para encontrar todos los dominios relacionados. En https:///www.shodan.io/dashboard  copiar el siguiente Dork. Si encontramos resultado acceder a la IP una por una copiando la direccion IP publica y pegando en el navegador y si tiene suerte puedes ver que podras acceder directamente al sitio web con alguna de esas IP.
    ```bash
    Ssl.cert.subject.CN:"ejemplo.com" 200
    ```
+   - También puedes usar este dork, te dará el mismo resultado.
+   ```bash
+   ssl:"ejemplo.com" 200
+   ```
 
+### Paso 2: IP Origen encotrada.
 
+1. Comprobarlo usando la extensión Wappalyzer que no hay cloudfront en el sitio web con la IP encontrada.
+2. Para verificar más, consulta con la herramienta wafw00f y podras ver que no hay ningún waf.
+   ```bash
+   wafw00f XX.XX.XX.XX
+   ```
+3. Inspeccionemos también el certificado usando nmap. Se confirma que la IP apunta al sitio web
+   ```bash
+   nmap --script ssl-cert -p 443 XX.XX.XX.XX
+   ssl-cert: Subject: commonName=*.ejemplo.com
+   Subject Alternative Name: DNS:*.ejemplo.com, DNS: ejemplo.com
+   ```
 
 
 
