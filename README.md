@@ -231,7 +231,8 @@ cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg
 6. Si aún no hemos encontrado la IP origen podemos seguir probando otro metodo, en el sitio web https://favicons.teamtailor-cdn.com/#result copiamos el sitio web https://ejemplo.com/
 7. Puedes ver que tenemos la URL de favicon de este dominio. Ahora podemos generar su hash usando otro sitio web https://favicon-hash.kmsec.uk. Copiamos solo el dominio del favicon https://ejemplo.com/favicon.ico en Retrieve from URL y generamos su hash md5.
 8. Ahora abramos este hash en shodan, puede que aparezcan resultado como tambien no aparecieron resultados para este hash.
-9. Verificar el hash generado en Censys. La misma pagina de https://favicon-hash.kmsec.uk te da la opcion de buscar en Shodan, VirusTotal y Censys.
+9. Verificar el hash generado en Censys. La misma pagina de https://favicon-hash.kmsec.uk te da la opcion de buscar en Shodan, VirusTotal y Censys. Puede que obtengas resultados, acceder a esas IP una por una.
+
 
 
 
