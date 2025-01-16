@@ -24,11 +24,11 @@
       ```
 ### 1.6. Usando nuclei para ver encontrar Information disclosure
    - ```bash 
-      cat js.txt | nuclei -t /home/sn0w/nuclei-templates/http/exposures/ 
+      cat js.txt | nuclei -t /home/paulportanc/nuclei-templates/http/exposures/ 
       ```
 ### 1.7. Usando nuclei para ver encontrar Information disclosure en un sitio web
    - ```bash 
-      echo www.viator.com | katana -ps | grep -E "\.js$" | nuclei -t /home/sn0w/nuclei-templates/http/exposures/ -c 30
+      echo www.viator.com | katana -ps | grep -E "\.js$" | nuclei -t /home/paulportanc/nuclei-templates/http/exposures/ -c 30
       ```
 ### 1.8. Buscar con dirsearch directorios ocultos vulnerables
    - ```bash 
@@ -50,11 +50,11 @@
       ```     
 ### 1.11. CORS
    - ```bash 
-      python3 corsy.py -i /home/sn0w/vaitor/subdomains_alive.txt -t 10 --headers "User-Agent: GoogleBot\nCookie: SESSION=Hacked"
+      python3 corsy.py -i /home/paulportanc/vaitor/subdomains_alive.txt -t 10 --headers "User-Agent: GoogleBot\nCookie: SESSION=Hacked"
       ```
 ### 1.12. CORS con Nuclei
    - ```bash 
-      nuclei -list subdomains_alive.txt -t /home/sn0w/Priv8-Nuclei/cors
+      nuclei -list subdomains_alive.txt -t /home/paulportanc/Priv8-Nuclei/cors
       ```
 ### 1.13. Nuclei
    - ```bash 
@@ -66,7 +66,7 @@
       ```
 ### 1.15. OR Open Redirect
    - ```bash 
-      cat allurls.txt | gf redirect | openredirex -p /home/sn0w/openRedirect
+      cat allurls.txt | gf redirect | openredirex -p /home/paulportanc/openRedirect
       ```
 
 
