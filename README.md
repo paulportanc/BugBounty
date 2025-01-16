@@ -229,7 +229,7 @@ cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg
    shodan search Ssl.cert.subject.CN:"ejemplo.com" 200 --fields ip_str | httpx-toolkit -sc -title -server -td
    ```
 6. Si aún no hemos encontrado la IP origen podemos seguir probando otro metodo, en el sitio web https://favicons.teamtailor-cdn.com/#result copiamos el sitio web http://ejemplo.com/
-
+7. Puedes ver que tenemos la URL de favicon de este dominio. Ahora podemos generar su hash usando otro sitio web https://favicon-hash.kmsec.uk
 
 ### Paso 2: IP Origen encontrada.
 
