@@ -238,7 +238,16 @@ cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg
 13. En Censys https://search.censys.io ingresamos el dominio ejemplo.com y buscamos. Verás muchos resultados tanto con ipv4 como con ipv6.
 14. También podemos utilizar FOFA https://en.fofa.info, otra excelente herramienta para encontrar IP. Solo copiamos el nombre del dominio "ejemplo.com". Podemos filtrarlo con el favicon del sitio para obtener resultado de ese sitio web.
 15. Ahora pasemos a ZoomEye https://www.zoomeye.hk/v2/, que es otra gran alternativa para mostrar IPs, solo copiar el dominio "ejemplo.com" y hacer clic en buscar.
-16. Otro método efectivo implica el uso de virus total, una excelente herramienta para descubrir subdominios y direcciones IP asociadas. Para comenzar, simplemente pegue el dominio en el parámetro de dominio y presione Entrar: https://www.virustotal.com/vtapi/v2/domain/report?apikey=982680b1787fa59701919aa22515a025e00df1e3bb2bc4f186b8e919558d576c&domain=dell.com.
+16. Otro método efectivo implica el uso de virus total, una excelente herramienta para descubrir subdominios y direcciones IP asociadas. Para comenzar, simplemente pegue el dominio en el parámetro de dominio y presione Entrar:
+   ```bash
+   https://www.virustotal.com/vtapi/v2/domain/report?apikey=3c8812a869db20881601fc05d21a3ac8baca9a3f243357af29923c739c93a62f&domain=dell.com
+   ```
+   - Cambiar dell.com por el sitioweb ejemplo.com.
+   - Como notará, virustotal proporciona una gran cantidad de información, incluidas muchas direcciones IP que el sitio web resuelve; sin embargo, verificar manualmente todas estas IP puede ser un desafío. Para facilitar este proceso, con este comando simple de una sola línea que recupera todas las direcciones IP usando una terminal, solo necesita copiar el comando y pegarlo en la terminal. Al instante verá una lista de direcciones IP obtenidas del sitio web.
+   ```bash
+   curl -s "https://www.virustotal.com/vtapi/v2/domain/report?domain=ejemplo.com&apikey=3c8812a869db20881601fc05d21a3ac8baca9a3f243357af29923c739c93a62f" | jq -r '.. | .ip_address? // empty' | grep -Eo'([0-9]{1,3}\.){3}[0-9]{1,3}'
+   ```
+18. 
 
 
 
