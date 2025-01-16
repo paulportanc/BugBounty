@@ -236,7 +236,12 @@ cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg
 11. Otro sitio web para probar es verificar el registro SPF de un dominio, simplemente copie el dominio ejemplo.com en https://mxtoolbox.com/SuperTool.aspx?action=dmarc%adrop.com&run=toolpage#. En el boton viene por defecto DMARC Lookup cambiar o seleccionar por SPF Record Lookup.
 12. De manera similar, ahora pasemos al siguiente sitio web, SecurityTrails, que uso para verificar los registros de IP https://securitytrails.com/app/account y pegamos el dominio para buscar ejemplo.com y haga clic en Historical Data. Puedes ver que hay tantos registros de IP de este sitio web, puedes copiar estas IP y comprobar si se puede acceder directamente a ellas o no.
 13. En Censys https://search.censys.io ingresamos el dominio ejemplo.com y buscamos. Verás muchos resultados tanto con ipv4 como con ipv6.
-14. 
+14. También podemos utilizar FOFA https://en.fofa.info, otra excelente herramienta para encontrar IP. Solo copiamos el nombre del dominio "ejemplo.com". Podemos filtrarlo con el favicon del sitio para obtener resultado de ese sitio web.
+15. Ahora pasemos a ZoomEye https://www.zoomeye.hk/v2/, que es otra gran alternativa para mostrar IPs, solo copiar el dominio "ejemplo.com" y hacer clic en buscar.
+16. Otro método efectivo implica el uso de virus total, una excelente herramienta para descubrir subdominios y direcciones IP asociadas. Para comenzar, simplemente pegue el dominio en el parámetro de dominio y presione Entrar: https://www.virustotal.com/vtapi/v2/domain/report?apikey=982680b1787fa59701919aa22515a025e00df1e3bb2bc4f186b8e919558d576c&domain=dell.com.
+
+
+
 
 
 
