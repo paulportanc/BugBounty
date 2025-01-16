@@ -187,12 +187,40 @@ cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg
 -------------------------------------------------------------------------------------------------
 
 
-# ***IV. Descubrimiento de IP de origen detrás de WAF: Methodology***
+# ***IV. Encontrar la IP de origen de cualquier sitio web detrás de un waf: Methodology***
 
-### 4.1. ....
-```bash
-....
-```
+1. Analizar el sitio web con la extensión Wappalyzer el sitio web.
+2. Analizar el sitio web con la extensión Shodan para ver la dirección IP. Y acceder al sitio web con la IP que indica (puede que muestre una página de error, lo que significa que no se puede acceder a la IP directa).
+3. Copiar el nombre del dominio y analizar en la terminal usando ping. Se podrá ver la IP del cloudfront y no del sitio web.
+   ```bash
+   ping ejemplo.com
+   PING emeplo.com (XX.XX.XX.XX) 56 bytes of data.
+   64 byte from server-XX-XX-XX-XX.del54.r.cloudfront.net 
+   ```
+4. Usar la herramienta de reconocimiento de DNS que a veces realiza bloqueos de DNS inversos. A veces puedes descubrir la IP de origen si el servidor no usa WAF. Sin embargo, en este caso vemos varios servidores cloudfront. Comprobemos las IP una por una del registro A. Ninguno de ellos es directamente accesible. Todos son IPS de Cloudflare
+   ```bash
+   dnsrecon -d ejemplo.com
+   [*] std: Performin General Enumeration against: ejemplo.com...
+   [-] DNSSEC is not configured for ejemplo.com
+   [*] SOA ns-634.awsdns......
+   [*] NS ns-634.awsdns......
+   [*] MX ns-634.awsdns......
+   [*] A ejemplo.com XX.XX.XX.105
+   [*] A ejemplo.com XX.XX.XX.101
+   [*] A ejemplo.com XX.XX.XX.45
+   [*] A ejemplo.com XX.XX.XX.94   
+   ```
+5. Realizar un verificacion cruzada con la herramienta WAFW00F para identificarlos
+   ```bash
+   wafw00f https://ejemplo.com/
+   ```
+6. El siguiente paso usaré un Shodan Dork para encontrar todos los dominios relacionados. En https:///www.shodan.io/dashboard  copiar el siguiente Dork. Si encontramos resultado acceder a la IP una por una.
+   ```bash
+   Ssl.cert.subject.CN:"ejemplo.com" 200
+   ```
+
+
+
 
 
 -------------------------------------------------------------------------------------------------
