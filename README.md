@@ -224,8 +224,12 @@ cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg
    ```bash
    ssl:"ejemplo.com" 200
    ```
+   - Ahora hagámoslo más fácil usando una línea de comando que le dará solo el resultado de la dirección IP junto con el título y el servidor.
+   ```bash
+   shodan search Ssl.cert.subject.CN:"ejemplo.com" 200 --fields ip_str | httpx-toolkit -sc -title -server -td
+   ```
 
-### Paso 2: IP Origen encotrada.
+### Paso 2: IP Origen encontrada.
 
 1. Comprobarlo usando la extensión Wappalyzer que no hay cloudfront en el sitio web con la IP encontrada.
 2. Para verificar más, consulta con la herramienta wafw00f y podras ver que no hay ningún waf.
