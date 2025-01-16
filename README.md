@@ -1,4 +1,4 @@
-# ***I. Bug Bounty: Methodology***
+# ***I. Bug Bounty***
 
 `Bug Bounty Methodology` este documento sirve para tener una metodología a la hora de hacer bug bounty en programas BBP (bug bounty program) o VDP (vulnerability disclosure program). Donde encontraras comandos para ayudarte rapidamente a realizar bug bounty desde lo mas básico a lo avanzado.
 
@@ -74,7 +74,7 @@
 -------------------------------------------------------------------------------------------------
 
 
-# ***II. XSS: Methodology***
+# ***II. XSS***
 
 `XSS Methodology` herramientas utilizadas.
 - https://github.com/lc/gau   |   https://github.com/tomnomnom/gf   |   https://github.com/coffinxp/gFpattren   |   https://github.com/s0md3v/uro   |   https://github.com/KathanP19/Gxss   |   https://github.com/Emoe/kxss   |   https://github.com/coffinxp/loxs
@@ -116,7 +116,7 @@
 -------------------------------------------------------------------------------------------------
 
 
-# ***III. JavaScript Reconocimiento: Methodology***
+# ***III. JavaScript Reconocimiento***
 
 ### 3.1. Extraer todos los endpoint js.
    - ```bash 
@@ -150,7 +150,7 @@
 -------------------------------------------------------------------------------------------------
 
 
-# ***IV. Encontrar la IP de origen de cualquier sitio web detrás de un waf: Methodology***
+# ***IV. Encontrar la IP de origen de cualquier sitio web detrás de un waf***
 
 ### Paso 1: Encontrar la IP Origen.
 
@@ -256,7 +256,34 @@
 
 -------------------------------------------------------------------------------------------------
 
-# ***V. Extensiones para Bug Hunting***
+
+# ***V. Encontrar errores de divulgación de información***
+
+1. Recuperar todas las URL pasivas del dominio de destino utilizando la Wayback machine. Simplemente cambie el nombre de dominio a su objetivo. En este punto puedes buscar manualmente un archivo específico como pdf, csvc, archivos db y más para identificar vulnerabilidades de divulgación de información.
+   ```bash
+   https://web.archive.org/cdx/search/cdx?url=*.nasa.gov/*&collapse=urlkey&output=text&fl=original 
+   ```
+2. Este comando hace lo mismo pero de manera mas eficiente con una soli linea de codigo.
+   ```bash
+   curl -G "https://web.archive.org/cdx/search/cdx" --data-urlencode "url=.ejemplo.com/" --data-urlencode "collapse=urlkey" --data-urlencode "output=text" --data-urlencode "fl=original" > out.txt 
+   ```
+3. Este otro comando oneliner para buscar nombres de archivos confidenciales.
+   ```bash
+   cat out.txt | uro |  grep -E '\.xls|\.xml|\.xlsx|\.json|\.pdf|\.sql|\.doc|\.docx|\.pptx|\.txt|\.zip|\.tar\.gz|\.tgz|\.bak|\.7z|\.rar|\.log|\.cache|\.secret|\.db|\.backup|\.yml|\.gz|\.config|\.csv|\.yaml|\.md|\.md5|\.exe|\.dll|\.bin|\.ini|\.bat|\.sh|\.tar|\.deb|\.rpm|\.iso|\.img|\.apk|\.msi|\.dmg|\.tmp|\.crt|\.pem|\.key|\.pub|\.asc' 
+   ```
+4. Si encuentran un archivo y cuando quieren abrir aparece Not found error 404. Mientras mucha gente se detiene aquí te mostraré un método de oro para recuperar estos archivos. Copie la URL que aparece el error 404, vaya a web https://web.archive.org y pegue la URL en la barra de búsqueda. Navegue en la  línea de tiempo y busque el archivado que tiene un snapshot en un fecha, y haga clic. Como vera puedes verlo aunque el archivo ya no esté en el servidor del sitio web, aún podemos acceder a él desde el archivo anterior.
+5. Además, puede usar virustotal para búsquedas similares, simplemente reemplace el dominio por su dominio de destino y enumerará todas las URL asociadas, busque archivos con una extensión interesante y, si dan como resultado errores 404, verifique en Wayback Machine el archivo de línea de tiempo anterior. De manera similar, puede usar Alien Vault. para buscar URL y archivos de la misma manera que encontramos el archivo 404, simplemente verifíquelos en el camino de regreso.
+   ```bash
+   https://www.virustotal.com/vtapi/v2/domain/report?apikey=3c8812a869db20881601fc05d21a3ac8baca9a3f243357af29923c739c93a62f&domain=example.com 
+   ```
+   ```bash
+   https://otx.alienvault.com/api/v1/indicators/hostname/example.com/url_list?limit=500&page=1 
+   ``` 
+
+   
+-------------------------------------------------------------------------------------------------
+
+# ***Extensiones para Bug Hunting***
    
 | Extensiones | Descripción | URL | Browser | Logo | By |
 | --- | --- | --- | --- | --- | --- |
@@ -290,7 +317,7 @@
 -------------------------------------------------------------------------------------------------
 
 
-# ***VI. Anonimato con Nipe***
+# ***Anonimato con Nipe***
    
    `NIPE` es un programa que usa la red Tor como puerta de enlace predeterminada del usuario, enrutando todo el tráfico en la red Tor, que a menudo se usa para brindar privacidad y anonimato. Permanecer en el anonimato es una excelente manera de protegerse de todo tipo de vigilancia..
    
