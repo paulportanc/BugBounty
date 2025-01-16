@@ -232,6 +232,14 @@ cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg
 7. Puedes ver que tenemos la URL de favicon de este dominio. Ahora podemos generar su hash usando otro sitio web https://favicon-hash.kmsec.uk. Copiamos solo el dominio del favicon https://ejemplo.com/favicon.ico en Retrieve from URL y generamos su hash md5.
 8. Ahora abramos este hash en shodan, puede que aparezcan resultado como tambien no aparecieron resultados para este hash.
 9. Verificar el hash generado en Censys. La misma pagina de https://favicon-hash.kmsec.uk te da la opcion de buscar en Shodan, VirusTotal y Censys. Puede que obtengas resultados, acceder a esas IP una por una.
+10. Comprobar el historial de IP del sitio web usando un sitio web de información de DNS https://viewdns.info y en la parte que dice IP History copiar el nombre del dominio ejemplo.com. Verá una lista de IP históricas. Puede probar estas IP una por una.
+11. Otro sitio web para probar es verificar el registro SPF de un dominio, simplemente copie el dominio ejemplo.com en https://mxtoolbox.com/SuperTool.aspx?action=dmarc%adrop.com&run=toolpage#. En el boton viene por defecto DMARC Lookup cambiar o seleccionar por SPF Record Lookup.
+12. De manera similar, ahora pasemos al siguiente sitio web, SecurityTrails, que uso para verificar los registros de IP https://securitytrails.com/app/account y pegamos el dominio para buscar ejemplo.com y haga clic en Historical Data. Puedes ver que hay tantos registros de IP de este sitio web, puedes copiar estas IP y comprobar si se puede acceder directamente a ellas o no.
+13. En Censys https://search.censys.io ingresamos el dominio ejemplo.com y buscamos. Verás muchos resultados tanto con ipv4 como con ipv6.
+14. 
+
+
+
 
 
 
