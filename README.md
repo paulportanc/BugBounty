@@ -243,22 +243,34 @@ cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg
    https://www.virustotal.com/vtapi/v2/domain/report?apikey=3c8812a869db20881601fc05d21a3ac8baca9a3f243357af29923c739c93a62f&domain=dell.com
    ```
    - Cambiar dell.com por el sitioweb ejemplo.com.
-   - Como notará, virustotal proporciona una gran cantidad de información, incluidas muchas direcciones IP que el sitio web resuelve; sin embargo, verificar manualmente todas estas IP puede ser un desafío. Para facilitar este proceso, con este comando simple de una sola línea que recupera todas las direcciones IP usando una terminal, solo necesita copiar el comando y pegarlo en la terminal. Al instante verá una lista de direcciones IP obtenidas del sitio web.
+   - Como notará, virustotal proporciona una gran cantidad de información, incluidas muchas direcciones IP que el sitio web resuelve; sin embargo, verificar manualmente todas estas IP puede ser un desafío. Para facilitar este proceso, con este comando simple de una sola línea que recupera todas las direcciones IP usando una terminal, solo necesita copiar el comando y pegarlo en la terminal. Al instante verá una lista de direcciones IP obtenidas del sitio web. 
    ```bash
    curl -s "https://www.virustotal.com/vtapi/v2/domain/report?domain=ejemplo.com&apikey=3c8812a869db20881601fc05d21a3ac8baca9a3f243357af29923c739c93a62f" | jq -r '.. | .ip_address? // empty' | grep -Eo'([0-9]{1,3}\.){3}[0-9]{1,3}'
    ```
-18. 
-
-
-
-
-
-
-
-
-
-
-
+   - Estoy usando httpx para este script, lo que hace que sea conveniente verificar qué IP son válidas y accesibles. 
+   ```bash
+   curl -s "https://www.virustotal.com/vtapi/v2/domain/report?domain=ejemplo.com&apikey=3c8812a869db20881601fc05d21a3ac8baca9a3f243357af29923c739c93a62f" | jq -r '.. | .ip_address? // empty' | grep -Eo'([0-9]{1,3}\.){3}[0-9]{1,3}' | httpx-toolkit -sc -td -title -server
+   ```
+   - También puedes usar otro mismo trazador de líneas para buscar subdominios. 
+      ```bash
+      curl -s "https://www.virustotal.com/vtapi/v2/domain/report?apikey=3c8812a869db20881601fc05d21a3ac8baca9a3f243357af29923c739c93a62f&domain=ejemplo.com" | jq -r '.domain_siblings[]'
+     ```
+18. Ahora pase al siguiente método. Utilizo AlienVault para esto. También es bueno para encontrar el sitio web IP de origen. Simplemente cambie el dominio y presione enter: 
+     ```bash
+      https://otx.alienvault.com/api/v1/indicators/hostname/ejemplo.com/url_list?limit=500&page=1
+    ```
+  - Tambien puede utilizar este oneliner. Opcional puede agregar httpx-toolkit para verificar qué IP son válidas y accesibles. 
+   ```bash
+   curl -s "https://otx.alienvault.com/api/v1/indicators/hostname/ejemplo.com/url_list?limit=500&page=1" | jq -r '.url_list[]?.result?.urlworker?.ip // empty' | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | httpx-toolkit -sc- td -title
+   ```
+19. Ahora, por último, pero no menos importante, también puedes probar el escaneo con urlscan para encontrar la IP de origen, simplemente cambia el dominio e ingresa.
+     ```bash
+      https://urlscan.io/api/v1/search/?q=domain:ejemplo.com&size=10000
+    ```
+     - Tambien puede utilizar este oneliner. Opcional puede agregar httpx-toolkit para verificar qué IP son válidas y accesibles. 
+      ```bash
+      curl -s "https://urlscan.io/api/v1/search/?q=domain:ejemplo.com&size=10000" | jq -r '.result[]?.page?.ip // empty' | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | httpx-toolkit -sc- td -title -server
+      ```
 
 
 ### Paso 2: IP Origen encontrada.
@@ -274,7 +286,7 @@ cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg
    ssl-cert: Subject: commonName=*.ejemplo.com
    Subject Alternative Name: DNS:*.ejemplo.com, DNS: ejemplo.com
    ```
-
+4. Agregar las IP origen al /etc/hosts para que cuando carge en el navegador resuelva con la IP origen y no con Cloudfare
 
 
 -------------------------------------------------------------------------------------------------
