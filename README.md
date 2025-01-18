@@ -259,6 +259,8 @@
 
 # ***V. Encontrar errores de divulgación de información | Cómo acceder a archivos 404 de cualquier servidor***
 
+### Metodologia.
+
 1. Recuperar todas las URL pasivas del dominio de destino utilizando la Wayback machine. Simplemente cambie el nombre de dominio a su objetivo. En este punto puedes buscar manualmente un archivo específico como pdf, csvc, archivos db y más para identificar vulnerabilidades de divulgación de información.
    ```bash
    https://web.archive.org/cdx/search/cdx?url=*.nasa.gov/*&collapse=urlkey&output=text&fl=original 
@@ -278,7 +280,54 @@
    ```
    ```bash
    https://otx.alienvault.com/api/v1/indicators/hostname/example.com/url_list?limit=500&page=1 
-   ``` 
+   ```
+   
+### Remediación.
+Cuando una empresa descubre que los usuarios están accediendo a versiones antiguas o archivadas de su sitio web a través de plataformas como Wayback Machine (web.archive.org), puede tomar varias medidas para prevenir o mitigar esta situación. Así es como las empresas pueden solucionar o abordar este problema:
+
+1. <ins>Solicitar eliminación de archivos web</ins>
+   - **Método:** Las empresas pueden solicitar a Internet Archive (que aloja Wayback Machine) que excluya o elimine las páginas de su sitio web del archivo.
+   - **Proceso:** pueden enviar una solicitud a través del formulario de eliminación de Internet Archive o incluir una regla de robots.txt que restrinja el rastreo del dominio.
+   - **Ejemplo de regla Robots.txt:**
+        ```bash
+      User-agent: ia_archiver Disallow: /  
+      ```
+     Esto impide que Wayback Machine archive o entregue copias del sitio.
+
+2. <ins>Mejora de la seguridad del lado del servidor</ins>
+   - Implemente políticas de seguridad de contenido (CSP) y controles para garantizar que las versiones antiguas del sitio no puedan interactuar con los sistemas actuales (por ejemplo, formularios, APIs o bases de datos de back-end).
+   - Supervise y elimine periódicamente referencias o enlaces a contenido confidencial en archivos web más antiguos, especialmente si pueden exponer vulnerabilidades.
+3. <ins>Deshabilitar las URL Legacy</ins>
+   - **Acción:** La empresa puede invalidar las URL existentes eliminando el enrutamiento del lado del servidor para rutas o puntos finales obsoletos.
+Esto garantiza que incluso si los usuarios recuperan contenido antiguo, cualquier función interactiva o vinculada dejará de funcionar.
+4. <ins>Actualización de Políticas Legales</ins>
+   - Las empresas pueden actualizar sus términos de servicio o utilizar avisos legales para indicar que las versiones antiguas de su sitio web no son legalmente vinculantes ni válidas para ningún propósito oficial.
+   - Esto puede reducir la responsabilidad y establecer expectativas para los usuarios.
+5. <ins>Auditoría de vulnerabilidades</ins>
+   - La empresa debe auditar la versión anterior del sitio web para determinar si hay información confidencial, código roto o vulnerabilidades explotables.
+   - Después de identificar los riesgos, pueden:
+      - Cierre los puntos finales no utilizados.
+      - Corrija viejos exploits o errores que aún puedan estar activos en los sistemas actuales.  
+6. <ins>Redirigir solicitudes de archivo</ins>
+   - Las empresas pueden utilizar redirecciones HTTP 301/302 para redirigir URL antiguas a una página estándar o a la página de inicio del sitio web.
+   - Ejemplo usando .htaccess: 
+     ```bash
+      Redirect 301 /old-path https://www.newsite.com  
+      ``` 
+7. <ins>Mejora de los sistemas de autenticación</ins>
+   - Para sitios con datos dinámicos o confidenciales (por ejemplo, portales, dashboards), la empresa debe aplicar sistemas sólidos de autenticación y autorización.
+   - Las páginas archivadas no deben exponer sesiones de usuarios activas o explotables.
+8. <ins>Monitoreo proactivo</ins>
+   -Utilice herramientas como rastreadores web, análisis o servicios de monitoreo para detectar cuándo se accede con frecuencia a páginas antiguas, especialmente si estas páginas generan un tráfico significativo desde los servicios de archive.
+9. <ins>Campañas educativas y de sensibilización</ins>
+   - Informar a los usuarios que el contenido de plataformas como Wayback Machine puede estar desactualizado o ser inexacto. Esto se puede hacer a través de banners, disclaimers o correos electrónicos.
+
+<ins>Cómo funciona esto en la práctica</ins>
+El método de parche específico depende del tipo de riesgo que plantea el archivo antiguo:
+   - **Riesgo de contenido estático:** actualice o elimine el contenido y solicite su eliminación de web.archive.org.
+   - **Riesgo interactivo (por ejemplo, API):** deshabilite o modifique la funcionalidad del lado del servidor para evitar la interacción con código antiguo. 
+Si la empresa cree que existe una infracción o explotación grave, puede escalarla consultando a profesionales de ciberseguridad o a un asesor legal.
+
 
    
 -------------------------------------------------------------------------------------------------
