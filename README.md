@@ -328,6 +328,66 @@ El método de parche específico depende del tipo de riesgo que plantea el archi
    - **Riesgo interactivo (por ejemplo, API):** deshabilite o modifique la funcionalidad del lado del servidor para evitar la interacción con código antiguo. 
 Si la empresa cree que existe una infracción o explotación grave, puede escalarla consultando a profesionales de ciberseguridad o a un asesor legal.
 
+### Reporte en BBP/VDP.
+
+1. <ins>Bug Description:</ins>
+   - While using waybackurls to enumerate URLs from a specific site, I discovered numerous .zip, .pdf, and .xls files. However, when attempting to access these files via their direct URLs, they consistently returned a 404 Not Found error. To further investigate, I accessed the URLs through the Web Archive and successfully retrieved the files by selecting earlier snapshots of the site. This indicates that the files, although no longer available directly, exist in archived versions of the site.
+
+2. <ins>Steps to Reproduce:</ins>
+   1.  Use waybackurls to extract URLs from the target site.
+   2.  Identify URLs for .zip, .pdf, or .xls files.
+   3.  Attempt to access the files through their direct URLs in a browser or using a tool like curl. Observe the 404 Not Found error.
+   4.  Navigate to Web Archive.
+   5.  Enter the inaccessible URL in the search bar.
+   6.  Select an older snapshot of the URL.
+   7.  Download the file successfully from the archive.
+
+   - Direct URLs return a 404 Not Found error, but files are retrievable from older snapshots in the Web Archive.
+
+ 3. <ins>Impact:</ins>
+      - Users are unable to access potentially critical resources through their original URLs. This could lead to user frustration, loss of trust, and inefficiency in retrieving historical data.
+
+ 4. <ins>Attachments:</ins>
+      - Example URLs showing the issue.
+      - Screenshots of the 404 error.
+      - Screenshots of successful downloads from Web Archive.
+    
+    Please address this issue to improve user experience and ensure data accessibility.
+    Removing content from the Wayback Machine (Web Archive) involves specific steps, as the archive is designed to preserve web content for public access. Website owners or authorized parties can request removal if they have a valid reason, such as sensitive or outdated information, copyright issues, or legal compliance. Below are the details on how this can be done:
+
+5. <ins>Steps to Remove Content from the Wayback Machine</ins>
+   1. Contact Internet Archive Directly.
+         - Website owners can submit a request to the Internet Archive to remove specific pages or files. This is typically done via email to their designated support team:
+         Email: info@archive.org
+         - Include the following details in your request:
+            - The exact URL(s) to be removed.
+            - The reason for the removal (e.g., copyright infringement, sensitive content, outdated information).
+            - Proof of ownership of the website (e.g., ability to edit DNS records, email correspondence from the domain).
+   3. Use the robots.txt File
+         - Update the website's robots.txt file to disallow the Internet Archive’s crawler from archiving the site or specific pages.
+         - Example:
+           ```bash
+           User-agent: ia_archiver
+           Disallow: /
+           ``` 
+         - Once this is done, notify the Internet Archive that you’ve updated the robots.txt file and request the removal of existing snapshots. They respect robots.txt directives.
+   4. Legal Takedown Notice
+         - If the content violates laws or copyrights, a DMCA takedown notice or similar legal notice can be submitted to the Internet Archive.
+         - Provide all relevant legal documentation and details about the infringement to strengthen your case.
+   5. Check Host-Level Restrictions
+         - If the content was hosted by a third-party provider, request that the hosting provider also take steps to block or remove access from their end.
+
+6. <ins>Mitigation if Removal is Not Possible</ins>
+   1.  Redirect to Updated Content:
+         - Ensure users landing on outdated links are redirected to a current version or alternative content.
+   2.  Proactive Management:
+         - Regularly monitor and manage outdated or sensitive content to prevent unnecessary archiving in the future.
+
+6. <ins>Important Notes</ins>
+   -  Only website owners or authorized parties can request content removal.
+   -  Internet Archive may deny requests that do not meet their policies or involve public interest material.
+
+
 
    
 -------------------------------------------------------------------------------------------------
