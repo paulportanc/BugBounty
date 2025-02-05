@@ -410,14 +410,50 @@ Si la empresa cree que existe una infracción o explotación grave, puede escala
    - ```bash 
       shortscan https://dominio.com -F
       ```
-### 3.4. ***Git Exposure***. La vulnerabilidad de exposición de .git ocurre cuando un directorio .git de un repositorio de Git o archivos de configuración se exponen accidentalmente a la red pública de Internet debido a servidores web mal configurados. Esto puede filtrar información confidencial, como el código fuente, el historial de confirmaciones y las credenciales, que los atacantes podrían aprovechar para obtener acceso no autorizado o identificar vulnerabilidades en el sistema.
+### 6.4. ***Git Exposure***. La vulnerabilidad de exposición de .git ocurre cuando un directorio .git de un repositorio de Git o archivos de configuración se exponen accidentalmente a la red pública de Internet debido a servidores web mal configurados. Esto puede filtrar información confidencial, como el código fuente, el historial de confirmaciones y las credenciales, que los atacantes podrían aprovechar para obtener acceso no autorizado o identificar vulnerabilidades en el sistema.
    - ```bash 
       cat dominios.txt | nuclei -t /home/paulportanc/prsnl/gitExposed.yaml  
       ```
      A continuación, puede utilizar la herramienta Git Dumper para recuperar confirmaciones eliminadas y extraer detalles adicionales del repositorio Git.
+     
+### 6.5. ***CORS Misconfiguration***. La vulnerabilidad CORS (Cross-Origin Resource Sharing - intercambio de recursos de origen cruzado) se produce cuando una aplicación web permite de forma indebida solicitudes de dominios no confiables, lo que permite a los atacantes acceder a datos confidenciales o realizar acciones no autorizadas en nombre de los usuarios. Esto puede suceder si la configuración de CORS es demasiado permisiva y permite que sitios web maliciosos interactúen con la aplicación..
+   - ```bash 
+      cat dominios.txt | nuclei -t /home/paulportanc/prsnl/cors.yaml  
+      ```
+     Para verificar cors puedes usar el repetidor burpsuite o usar el siguiente comando CURL.
+   - ```bash 
+      curl -H 'Origin: http://ejemplo.com' -I https://dominio.com/wp-json/ | grep -i -e 'access-control-allow-origin' -e 'access-control-allow-methods' -e 'access-control-allow-credentials'  
+      ```
+   - ```bash 
+      curl -H 'Origin: http://ejemplo.com' -I https://dominio.com/wp-json/  
+      ```
+### 6.6. ***Crendential Disclosure***. La divulgación de credenciales es la exposición de información confidencial, como contraseñas o claves API, a menudo debido a un almacenamiento o controles de acceso deficientes que conducen a un acceso no autorizado.
+   - ```bash 
+      cat dominios.txt | nuclei -t  /home/paulportanc/prsnl/credentials-disclosure-all.yaml -c 30  
+      ```
+### 6.7. ***Blind SSRF***. La SSRF ciega se produce cuando un atacante engaña a un servidor para que realice solicitudes a sistemas internos sin ver la respuesta. El atacante infiere que el ataque tuvo éxito basándose en pistas indirectas, como el tiempo o los errores. Es riesgoso, ya que puede exponer recursos internos.
+   - ```bash 
+      cat dominios.txt | nuclei -t /home/paulportanc/prsnl/blind-ssrf.yaml -c 30 -dast  
+      ```
+     Después de detectar Blind SSRF, use la plantilla SSRF de respuesta para acceder a /etc/passwd y otros archivos internos del servidor. Para verificar, use el siguiente comando CURL, le mostrará el archivo passwd del sistema, etc.
+   - ```bash 
+      cat dominios.txt | nuclei -t /home/paulportanc/prsnl/response-ssrf.yaml --retries 2 --dast
+      ```
+### 6.8. ***SQL injection***. La inyección SQL es un tipo de ataque en el que un atacante inserta un código SQL malicioso en una consulta, lo que le permite manipular o acceder a una base de datos de manera no autorizada. Esta plantilla ayudará a detectar la inyección SQL basada en errores.
+   - ```bash 
+      cat domains.txt | nuclei -t /home/paulportanc/prsnl/errorsqli.yaml -dast  
+      ```
+### 6.9. ***Swagger-Ui XSS***. Swagger XSS ocurre cuando un atacante inyecta scripts maliciosos en Swagger UI, una herramienta para la documentación de API. Esto puede provocar acciones no autorizadas, robo de datos o desfiguración de la interfaz de la API que afecten a los usuarios que interactúan con ella.
+   - ```bash 
+      subfinder -d dominio.txt -all -slent | httpx-toolkit -path /swagger-api/ -sc -content-length -mc 200 
+      ```
+### 6.10. ***CRLF injection***. La inyección CRLF es cuando un atacante inserta caracteres de nueva línea maliciosos en campos de entrada, lo que potencialmente le permite manipular encabezados, crear divisiones de respuestas HTTP o inyectar contenido malicioso en aplicaciones web. Después de encontrar esto, puede confirmar la vulnerabilidad utilizando Burp Suite o simplemente usando el comando CURL.
 
+   - ```bash 
+      cat dominios.txt | nuclei -t /home/paulportanc/prsnl/cRlf.yaml -rl 50 -c 30 
+      ```
 
-   
+      
 -------------------------------------------------------------------------------------------------
 
 # ***Extensiones para Bug Hunting***
