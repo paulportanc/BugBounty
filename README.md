@@ -388,6 +388,34 @@ Si la empresa cree que existe una infracción o explotación grave, puede escala
    -  Internet Archive may deny requests that do not meet their policies or involve public interest material.
 
 
+     
+-------------------------------------------------------------------------------------------------
+
+
+# ***VI. Plantillas Nuclei***
+
+### 6.1. ***Open Redirect***. Es una vulnerabilidad en la que una aplicación web redirecciona de forma incorrecta a los usuarios a sitios que no son de confianza, lo que permite a los atacantes redirigir a las víctimas a sitios web maliciosos o de phishing.
+   - ```bash 
+      cat dominios.txt | nuclei -t /home/paulportanc/prsnl/openRedirect.yaml --retries 2
+      ```
+### 6.2. ***WP-Setup Disclosure***. Esta plantilla ayuda a identificar el archivo wp-admin/setup-config.php que puede exponer información confidencial, como credenciales. Suele clasificarse como una vulnerabilidad P1 en los programas de recompensas por errores.
+   - ```bash 
+      cat dominios.txt | nuclei -t /home/paulportanc/prsnl/wp-setup-config.yaml
+      ```
+### 6.3. ***Microsoft IIS Scanner***. La explotación de esta vulnerabilidad puede filtrar archivos que contienen información confidencial, como credenciales, archivos de configuración, scripts de mantenimiento y otros datos.
+   - ```bash 
+      cat dominios.txt | nuclei -t /home/paulportanc/prsnl/iis.yaml -c 30
+      ```
+     Después de descubrir esta vulnerabilidad, puede utilizar la herramienta ShortScan para identificar archivos y directorios confidenciales mediante este comando:
+   - ```bash 
+      shortscan https://dominio.com -F
+      ```
+### 3.4. ***Git Exposure***. La vulnerabilidad de exposición de .git ocurre cuando un directorio .git de un repositorio de Git o archivos de configuración se exponen accidentalmente a la red pública de Internet debido a servidores web mal configurados. Esto puede filtrar información confidencial, como el código fuente, el historial de confirmaciones y las credenciales, que los atacantes podrían aprovechar para obtener acceso no autorizado o identificar vulnerabilidades en el sistema.
+   - ```bash 
+      cat dominios.txt | nuclei -t /home/paulportanc/prsnl/gitExposed.yaml  
+      ```
+     A continuación, puede utilizar la herramienta Git Dumper para recuperar confirmaciones eliminadas y extraer detalles adicionales del repositorio Git.
+
 
    
 -------------------------------------------------------------------------------------------------
