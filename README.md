@@ -393,6 +393,8 @@ Si la empresa cree que existe una infracción o explotación grave, puede escala
 
 # ***VI. Open Redirect in Web Apps***
 
+`Open Redirect` es una falla de seguridad común que permite a los atacantes redirigir a los usuarios a sitios web maliciosos. Esta vulnerabilidad ocurre cuando una aplicación web acepta URL introducidas por el usuario sin la validación ni el control adecuado.
+
 ### 6.1. Usando plantilla favorita de Nuclei.
    - ```bash 
       cat dominios.txt | nuclei -t /home/paulportanc/prsnl/openRedirect.yaml -c 30
