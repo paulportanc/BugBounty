@@ -388,11 +388,33 @@ Si la empresa cree que existe una infracción o explotación grave, puede escala
    -  Internet Archive may deny requests that do not meet their policies or involve public interest material.
 
 
-     
 -------------------------------------------------------------------------------------------------
 
 
-# ***VI. Plantillas Nuclei***
+# ***VI. Open Redirect in Web Apps***
+
+### 6.1. Usando plantilla favorita de Nuclei.
+   - ```bash 
+      cat dominios.txt | nuclei -t /home/paulportanc/prsnl/openRedirect.yaml -c 30
+      ```
+### 6.2. Usando Google Dorking
+   - ```bash 
+      python dorking.py
+      Enter The Dork Search Query: site:.ru(inurl:url= | inurl:return= | inurl:next= | inurl:redirect= | inurl:redir= | inurl:ret= | inurl:r2= | inurl:page= | inurl:dest= | inurl:target= | inurl:redirect_uir= | inurl:redirect_url= | inurl:checkout_url= | inurl:continue= | inurl:return_path= | inurl:returnTo= |  inurl:out= | inurl:go= | inurl:login?to= | inurl:origin= | inurl:callback_url= | inurl:jump= | inurl:action_url= | inurl:forward= | inurl:src= | inurl:http= | inurl:&)
+      Enter Total ....: all
+      Do You Want to save...: y
+      Enter Output Filename: openredirect
+
+     cat openredirect | wc -l
+     cat openredirect | gf redirect 
+      ```
+
+
+
+-------------------------------------------------------------------------------------------------
+
+
+# ***VII. Plantillas Nuclei***
 
 ### 6.1. ***Open Redirect***. Es una vulnerabilidad en la que una aplicación web redirecciona de forma incorrecta a los usuarios a sitios que no son de confianza, lo que permite a los atacantes redirigir a las víctimas a sitios web maliciosos o de phishing.
    - ```bash 
@@ -452,6 +474,7 @@ Si la empresa cree que existe una infracción o explotación grave, puede escala
    - ```bash 
       cat dominios.txt | nuclei -t /home/paulportanc/prsnl/cRlf.yaml -rl 50 -c 30 
       ```
+
 
       
 -------------------------------------------------------------------------------------------------
