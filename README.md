@@ -299,7 +299,7 @@
    ```
 2. Este comando hace lo mismo pero de manera mas eficiente con una soli linea de codigo.
    ```bash
-   curl -G "https://web.archive.org/cdx/search/cdx" --data-urlencode "url=.ejemplo.com/" --data-urlencode "collapse=urlkey" --data-urlencode "output=text" --data-urlencode "fl=original" > out.txt 
+   curl -G "https://web.archive.org/cdx/search/cdx" --data-urlencode "url=*.ejemplo.com/" --data-urlencode "collapse=urlkey" --data-urlencode "output=text" --data-urlencode "fl=original" > out.txt 
    ```
 3. Este otro comando oneliner para buscar nombres de archivos confidenciales.
    ```bash
