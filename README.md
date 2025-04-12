@@ -614,15 +614,6 @@ Si la empresa cree que existe una infracción o explotación grave, puede escala
      
 -------------------------------------------------------------------------------------------------
 
-# ***XI. ACTIVE DIRECTORY***
-
-### 10.1. ***PureDNS***. Resolver/forzar mediante DNS.
-   - ```bash 
-      puredns bruteforce best-dns-wordlist.txt dominio.com -r resolvers.txt -w dns | httpx -mc 200 -o subdomain_output.txt 
-      ```
-     
--------------------------------------------------------------------------------------------------
-
 
 
 # ***Extensiones para Bug Hunting***
