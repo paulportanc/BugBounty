@@ -72,28 +72,74 @@
    - ```bash 
       cat allurls.txt | gf redirect | openredirex -p /home/paulportanc/openRedirect
       ```
-### 1.16. HTTPX. 
+### 1.16. CRLF
+   - ```bash 
+      cat subdomains_alive.txt | nuclei -t /home/paulportanc/Priv8-Nuclei/crklf/crlf2.yaml -v
+      ```
+### 1.17. Shortscan
+   - ```bash 
+      shortscan https://www.dominio.com/ -F
+      shortscan https://otrosubdominio.dominio.com/ -F
+      ```
+### 1.18. HTTPX. 
    - Utilizar **Httpx** para encontrar **LFI**. Este comando que le mostrará todas las urls vulnerables lfi en la pantalla, básicamente etc/passwd archivo de contraseña en la respuesta y mostrar todas las urls en la pantalla.
    - ```bash
       echo 'https://ejemplo.com/index.php?page=' | httpx-toolkit -paths payloads/lfi.txt -threads 50 -random-agent -mc 200 -mr "root:(x|\|\$[^\:]):0:0:"
       ```
-### 1.17. WFUZZ. 
+### 1.19. WFUZZ. 
    - Utilizar **wfuzz** para fuerza bruta.
    - ```bash
       wfuzz -d '{"email":"hapihacker@email.com", "otp":"FUZZ","password":"NewPassword1"}' -H 'Content-Type: application/json' -z file,/usr/share/wordlists/SecLists-master/Fuzzing/4-digits-0000-9999.txt -u http://crapi.apisec.ai/identity/api/auth/v2/check-otp --hc 500
       ```
-### 1.18. SHODAN. 
+### 1.20. SHODAN. 
    - Obtener todas las IPs de Shodan sin ninguna cuenta premium. Una vez estando en Shodan en Facet Analysis, precionar F12 e ir a Console y escribir: **allow pasting**. Copiar el siguiente código
    - ```bash
       var ipElements=document.querySelectorAll('strong');var ips=[];ipElements.forEach(function(e){ips.push(e.innerHTML.replace(/["']/g,''))});var ipsString=ips.join('\n');var a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(ipsString);a.download='shodanips.txt';document.body.appendChild(a);a.click();
       ```
-### 1.19. APIs. 
+### 1.21. APIs. 
    - Enumerar la superficie de ataque, obtener API KEYS y puntos finales de API en Móviles. Descarga el .apk usando APKCombo o APKPure. Escaneo de archivos APK en busca de URI, puntos finales y secrets. Validar API KEY encontrada con nuclei
    - ```bash
       apkleaks -f com.EJEMPLO.COM.apk -o output_endpoints_apikeys
       nuclei -t nuclei-templates/http/token-spray -var token=<API_KEY_FOUND>
       ```
-
+### 1.22. Otra forma de encontrar subdominios. 
+   - ```bash 
+      subfinder -dL domains.txt -all -recursive -o subdomains.txt
+      ```
+### 1.23. crt.sh. 
+   - Certificate Search
+   - ```bash
+      https://crt.sh
+      %.dominio.com -> clic en search
+      ```
+### 1.24. crt.sh. 
+   - ```bash
+      curl -s https://crt.sh/\?q\=\amazon.com\&output\=json | jq -r '.[].name_value' | grep -Po '(\w+\.\w+\.\w+)$' | anew subdomains.txt
+      ```
+### 1.25. Httpx. 
+   - ```bash
+      cat subdomains.txt | httpx-toolkit -l subdomains.txt -ports 443,80,8080,8000,8888 -threads 200 > subdomains_alive.txt
+      ```
+### 1.26. Naabu. 
+   - ```bash
+      naabu -list subdomains-txt -c 50 -nmap-cli 'nmap -sV -sC' -o naabu-full.txt
+      ```
+### 1.27. Dirsearch
+   - ```bash 
+      dirsearch  -l subdomains_alive.txt -x 500,502,429,404,400 -R 5 --random-agent -t 100 -F -o directory.txt -w /home/paulportanc/oneforall/onelistforallshort.txt
+      ```
+### 1.28. Gau
+   - ```bash 
+      cat subdomains_alive.txt | gau > params.txt
+      cat params.txt | uro -o filterparam.txt
+      cat filterparam.txt | grep ".js$" > jsfiles.txt
+      cat jsfiles.txt | uro | anew jsfiles.txt
+      ```
+### 1.29. Secret
+   - ```bash 
+      cat jsfiles.txt | while read url; do python3 /home/paulportanc/SecretFinder/SecretFinder.py -i $url -o ci >> secret.txt; done
+      ```
+     
 -------------------------------------------------------------------------------------------------
 
 
