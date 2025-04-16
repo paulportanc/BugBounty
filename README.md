@@ -716,7 +716,58 @@ Si la empresa cree que existe una infracción o explotación grave, puede escala
    - ```bash 
       puredns bruteforce best-dns-wordlist.txt dominio.com -r resolvers.txt -w dns | httpx -mc 200 -o subdomain_output.txt 
       ```
-     
+-------------------------------------------------------------------------------------------------
+
+# ***XII. ISS***
+
+### 12.1. ***Google Dorking***..
+   - ```bash 
+      intitle:"IIS Windows Server" site:.gob.pe 
+      intitle:"IIS Windows Server" site:.gob
+      intitle:"IIS Windows Server" site:.mil
+
+      - Corroborar con Wappalyzer
+      - Con extenxion extrac link hacer clic en Extrac Only Domains y copiar en un archivo llamado iis.txt
+      ```
+### 12.2. ***HTTP-toolkit***..
+   - ```bash 
+      cat iis.txt | httpx-toolkit -sc -td --title
+      cat iis.txt | httpx-toolkit -sc -td --title | grep IIS
+
+      Con Burp plugin IIS Tilde Enumeration, pegar en Target cualquiera que hemos encontrado y numero de hilos 20 y clic en scan. Si da error probar con cada uno. En la parte inferior ver en All issues
+      ```
+### 12.3. ***Shortscan***..
+   - ```bash 
+      shortscan https://url-encontrada -F (va a salir si es vulnerable o no)
+      ```
+
+-------------------------------------------------------------------------------------------------
+
+# ***XIII. WordPress***
+
+### 12.1. ***WordPress Admin Takeover - cookie***..
+   - ```bash 
+      https://www.youtube.com/watch?v=zSTpSn_-bgw
+      ```
+
+-------------------------------------------------------------------------------------------------
+
+# ***XIV. ServiceNow***
+
+### 12.1. ***CVE-2024-4879 - Jelly Template Injection Vulnerability in ServiceNow***..
+   - ```bash 
+      https://www.youtube.com/watch?v=__r7tz47Lso
+      ```
+
+-------------------------------------------------------------------------------------------------
+
+# ***XV. OPT Bypass***
+
+### 12.1. ***Captura con Burp Suite el codigo OTP y hace un Bypass***..
+   - ```bash 
+      https://www.youtube.com/watch?v=AaoMqnu3DhA
+      https://www.youtube.com/watch?v=xmNHAcugrzw
+      ```
 -------------------------------------------------------------------------------------------------
 
 
