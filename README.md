@@ -2,10 +2,6 @@
 
 `Bug Bounty Methodology` este documento sirve para tener una metodología a la hora de hacer bug bounty en programas BBP (bug bounty program) o VDP (vulnerability disclosure program). Donde encontraras comandos para ayudarte rapidamente a realizar bug bounty desde lo mas básico a lo avanzado.
 
-### 1.0. Enumerar de forma pasiva todos los puntos finales de un sitio web.
-   - ```bash 
-      echo ejemplo.com | katana -passive -f qurl -pss waybackarchive,commoncrawl,alienvault | httpx -mc 200 | grep -E '\.(js|php)$' | tee specificEndpoints
-      ```   
 ### 1.1. Encontrar todos subdominios con subfinder de un dominio principal
    - ```bash 
       subfinder -d viator.com -all  -recursive > subdomain.txt
