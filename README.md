@@ -52,6 +52,11 @@
    - ```bash 
       python3 corsy.py -i /home/paulportanc/vaitor/subdomains_alive.txt -t 10 --headers "User-Agent: GoogleBot\nCookie: SESSION=Hacked"
       ```
+   - ```bash 
+      cat dell.com.txt | httpx-toolkit -silent -o output-dell.txt
+
+      python corsy.py -i /home/paulportanc/output-dell.txt
+      ```
 ### 1.12. CORS con Nuclei
    - ```bash 
       nuclei -list subdomains_alive.txt -t /home/paulportanc/Priv8-Nuclei/cors
@@ -63,6 +68,18 @@
 ### 1.14. LFI
    - ```bash 
       cat allurls.txt | gf lfi | nuclei -tags lfi
+      ```
+   - Otro ejemplo con subfinder
+   - ```bash 
+      subfinder -d www.domain.com | httpx-toolkit | gau | uro | gf lfi | tee output-domain.txt
+
+      nuclei -list output-domain.txt -tags lfi
+      ```
+   - Otro ejemplo
+   - ```bash 
+      echo 'https://arc.iram.fr/' | gau | uro | gf lfi
+
+      nuclei -target 'https://pegar el url del cualuiera del comando anterior' -tags lfi
       ```
 ### 1.15. OR Open Redirect
    - ```bash 
